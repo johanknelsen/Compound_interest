@@ -300,11 +300,6 @@
                 <h2>Global Parameters</h2>
 
                 <div class="input-group">
-                    <label for="monthly-contribution">Monthly Contribution ($)</label>
-                    <input type="number" id="monthly-contribution" value="500" min="0" step="50" aria-label="Monthly Contribution in Dollars">
-                </div>
-
-                <div class="input-group">
                     <label for="time-period">Time Period (Years)</label>
                     <input type="number" id="time-period" value="10" min="1" max="50" step="1" aria-label="Investment Time Period in Years">
                 </div>
@@ -328,7 +323,11 @@
                         </div>
                         <div class="input-group">
                             <label>ETF Name</label>
-                            <input type="text" class="etf-name" value="SPY" placeholder="e.g., SPY" aria-label="Name of ETF 1">
+                            <input type="text" class="etf-name" value="Example" placeholder="e.g., Example" aria-label="Name of ETF 1">
+                        </div>
+                        <div class="input-group">
+                            <label>Annual Contribution ($)</label>
+                            <input type="number" class="etf-annual-contribution" value="6000" min="0" step="100" aria-label="Annual Contribution for ETF 1 in Dollars">
                         </div>
                         <div class="input-group">
                             <label>Annual Return (%)</label>
@@ -428,6 +427,10 @@
                     <input type="text" class="etf-name" placeholder="e.g., QQQ" aria-label="Name of ETF ${etfCount}">
                 </div>
                 <div class="input-group">
+                    <label>Annual Contribution ($)</label>
+                    <input type="number" class="etf-annual-contribution" value="6000" min="0" step="100" aria-label="Annual Contribution for ETF ${etfCount} in Dollars">
+                </div>
+                <div class="input-group">
                     <label>Annual Return (%)</label>
                     <input type="number" class="annual-return" value="12" min="0" max="50" step="0.1" aria-label="Annual Return for ETF ${etfCount} in Percentage">
                 </div>
@@ -446,10 +449,9 @@
 
         function calculateCompounding() {
             // Input validation
-            const monthlyContribution = parseFloat(document.getElementById('monthly-contribution').value) || 0;
             const years = parseInt(document.getElementById('time-period').value) || 1;
-            if (monthlyContribution < 0 || years < 1 || years > 50) {
-                alert('Please ensure monthly contribution is non-negative and time period is between 1 and 50 years.');
+            if (years < 1 || years > 50) {
+                alert('Please ensure time period is between 1 and 50 years.');
                 return;
             }
 
@@ -461,10 +463,11 @@
             etfSections.forEach((section, index) => {
                 const initialInvestment = parseFloat(section.querySelector('.etf-initial-investment').value) || 0;
                 const name = section.querySelector('.etf-name').value || `ETF #${index + 1}`;
+                const annualContribution = parseFloat(section.querySelector('.etf-annual-contribution').value) || 0;
                 const annualReturn = parseFloat(section.querySelector('.annual-return').value) || 0;
                 const expenseRatio = parseFloat(section.querySelector('.expense-ratio').value) || 0;
 
-                if (initialInvestment < 0 || annualReturn < 0 || expenseRatio < 0 || annualReturn > 50 || expenseRatio > 5) {
+                if (initialInvestment < 0 || annualContribution < 0 || annualReturn < 0 || expenseRatio < 0 || annualReturn > 50 || expenseRatio > 5) {
                     alert(`Invalid inputs for ${name}. Ensure all values are non-negative and within reasonable ranges.`);
                     return;
                 }
@@ -475,27 +478,29 @@
                 if (compoundingFrequency === 'monthly') {
                     const monthlyRate = netAnnualReturn / 100 / 12;
                     const months = years * 12;
-                    if (monthlyRate === 0) {
-                        finalAmount = initialInvestment + (monthlyContribution * months);
-                    } else {
-                        const futureValueInitial = initialInvestment * Math.pow(1 + monthlyRate, months);
-                        const futureValueContributions = monthlyContribution * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
-                        finalAmount = futureValueInitial + futureValueContributions;
+                    let amount = initialInvestment;
+                    for (let year = 1; year <= years; year++) {
+                        // Apply annual contribution at the start of each year
+                        amount += annualContribution;
+                        // Compound monthly for the year
+                        for (let month = 1; month <= 12; month++) {
+                            amount = monthlyRate === 0 ? amount : amount * (1 + monthlyRate);
+                        }
                     }
-                    totalContributions = initialInvestment + (monthlyContribution * months);
+                    finalAmount = amount;
+                    totalContributions = initialInvestment + (annualContribution * years);
                 } else {
                     const yearlyRate = netAnnualReturn / 100;
                     let amount = initialInvestment;
-                    const yearlyContribution = monthlyContribution * 12;
                     for (let year = 1; year <= years; year++) {
-                        amount = (amount + yearlyContribution) * (1 + yearlyRate);
+                        amount = (amount + annualContribution) * (1 + yearlyRate);
                     }
                     finalAmount = amount;
-                    totalContributions = initialInvestment + (yearlyContribution * years);
+                    totalContributions = initialInvestment + (annualContribution * years);
                 }
 
                 const totalGains = finalAmount - totalContributions;
-                const breakdownData = calculateBreakdown(initialInvestment, monthlyContribution, netAnnualReturn, years, compoundingFrequency);
+                const breakdownData = calculateBreakdown(initialInvestment, annualContribution, netAnnualReturn, years, compoundingFrequency);
 
                 results.push({
                     name,
@@ -517,28 +522,31 @@
             }
         }
 
-        function calculateBreakdown(initial, monthlyContrib, netAnnualReturn, totalYears, frequency) {
+        function calculateBreakdown(initial, annualContrib, netAnnualReturn, totalYears, frequency) {
             const breakdown = [];
             let amount = initial;
-            const yearlyContrib = monthlyContrib * 12;
             const rate = netAnnualReturn / 100;
 
             if (frequency === 'monthly') {
                 const monthlyRate = rate / 12;
                 for (let year = 1; year <= totalYears; year++) {
+                    // Add annual contribution at the start of the year
+                    const startOfYearAmount = amount;
+                    amount += annualContrib;
+                    const contribInterest = amount - startOfYearAmount;
                     for (let month = 1; month <= 12; month++) {
                         const startOfMonthAmount = amount;
-                        amount = monthlyRate === 0 ? (startOfMonthAmount + monthlyContrib) : (startOfMonthAmount * (1 + monthlyRate) + monthlyContrib);
-                        const interest = amount - startOfMonthAmount - monthlyContrib;
-                        breakdown.push({ type: 'month', year, month, amount, interest });
+                        amount = monthlyRate === 0 ? amount : amount * (1 + monthlyRate);
+                        const interest = amount - startOfMonthAmount;
+                        breakdown.push({ type: 'month', year, month, amount, interest, contribution: month === 1 ? contribInterest : 0 });
                     }
                 }
             } else {
                 for (let year = 1; year <= totalYears; year++) {
                     const startOfYearAmount = amount;
-                    amount = (startOfYearAmount + yearlyContrib) * (1 + rate);
-                    const interest = amount - startOfYearAmount - yearlyContrib;
-                    breakdown.push({ type: 'year', year, amount, interest });
+                    amount = (amount + annualContrib) * (1 + rate);
+                    const interest = amount - startOfYearAmount - annualContrib;
+                    breakdown.push({ type: 'year', year, amount, interest, contribution: annualContrib });
                 }
             }
             return breakdown;
@@ -556,6 +564,7 @@
                             <th>Annual Return</th>
                             <th>Expense Ratio</th>
                             <th>Net Return</th>
+                            <th>Annual Contribution</th>
                             <th>Final Amount</th>
                             <th>Total Gains</th>
                             <th>ROI</th>
@@ -572,6 +581,7 @@
                         <td>${result.annualReturn.toFixed(2)}%</td>
                         <td>${result.expenseRatio.toFixed(2)}%</td>
                         <td>${result.netAnnualReturn.toFixed(2)}%</td>
+                        <td>$${result.breakdownData[0]?.contribution.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}) || '0'}</td>
                         <td>$${result.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                         <td>$${result.totalGains.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                         <td>${result.roiPercentage.toFixed(1)}%</td>
