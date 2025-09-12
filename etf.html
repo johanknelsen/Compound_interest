@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETF Compound Interest Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+
+        .calculator-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .etf-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e9ecef;
+        }
+
+        .etf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .etf-title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #34495e;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .results-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #28a745;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .best-performer {
+            background: #d4edda !important;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .year-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .year-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #667eea;
+        }
+
+        .year-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .year-card h5 {
+            color: #34495e;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+
+        .etf-result {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .amount {
+            font-weight: 600;
+            text-align: right;
+        }
+        
+        .interest-gained {
+            font-size: 0.8em;
+            font-weight: 500;
+            color: #28a745;
+        }
+
+        .compounding-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .toggle-group {
+            display: flex;
+            background: #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .toggle-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        .toggle-btn:disabled {
+            cursor: not-allowed;
+            color: #aaa;
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ETF Compound Interest Calculator</h1>
+        
+        <div class="calculator-section">
+            <div class="input-section">
+                <h2>Global Parameters</h2>
+
+                <div class="input-group">
+                    <label for="monthly-contribution">Monthly Contribution ($)</label>
+                    <input type="number" id="monthly-contribution" value="500" min="0" step="50">
+                </div>
+
+                <div class="input-group">
+                    <label for="time-period">Time Period (Years)</label>
+                    <input type="number" id="time-period" value="10" min="1" max="50" step="1">
+                </div>
+
+                <div class="compounding-toggle">
+                    <label>Compounding Frequency:</label>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" data-frequency="monthly">Monthly</button>
+                        <button class="toggle-btn" data-frequency="yearly">Yearly</button>
+                    </div>
+                </div>
+
+                <div id="etfs-container">
+                    <div class="etf-section">
+                        <div class="etf-header">
+                            <span class="etf-title">ETF #1</span>
+                        </div>
+                        <div class="input-group">
+                            <label>Initial Investment ($)</label>
+                            <input type="number" class="etf-initial-investment" value="10000" min="0" step="100">
+                        </div>
+                        <div class="input-group">
+                            <label>ETF Name</label>
+                            <input type="text" class="etf-name" value="SPY" placeholder="e.g., SPY">
+                        </div>
+                        <div class="input-group">
+                            <label>Annual Return (%)</label>
+                            <input type="number" class="annual-return" value="10" min="0" max="50" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Expense Ratio (%)</label>
+                            <input type="number" class="expense-ratio" value="0.09" min="0" max="5" step="0.01">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary" onclick="addETF()">Add Another ETF</button>
+                <button class="btn" onclick="calculateCompounding()">Calculate</button>
+            </div>
+
+            <div class="results-section">
+                <h2>Comparison Results</h2>
+                 <div class="compounding-toggle" style="margin-top:15px;">
+                    <label>Breakdown View:</label>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" data-breakdown="yearly">Yearly</button>
+                        <button class="toggle-btn" data-breakdown="monthly">Monthly</button>
+                    </div>
+                </div>
+                <div id="results-content">
+                    <p>Enter your investment parameters and click "Calculate" to see the comparison results.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let etfCount = 1;
+        let compoundingFrequency = 'monthly';
+        let breakdownType = 'yearly';
+
+        // Toggle compounding frequency
+        document.querySelectorAll('.toggle-btn[data-frequency]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.toggle-btn[data-frequency]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                compoundingFrequency = this.dataset.frequency;
+
+                const monthlyBreakdownBtn = document.querySelector('.toggle-btn[data-breakdown="monthly"]');
+                const yearlyBreakdownBtn = document.querySelector('.toggle-btn[data-breakdown="yearly"]');
+                if (compoundingFrequency === 'yearly') {
+                    monthlyBreakdownBtn.disabled = true;
+                    if (breakdownType === 'monthly') {
+                        breakdownType = 'yearly';
+                        yearlyBreakdownBtn.classList.add('active');
+                        monthlyBreakdownBtn.classList.remove('active');
+                    }
+                } else {
+                    monthlyBreakdownBtn.disabled = false;
+                }
+            });
+        });
+
+        // Toggle breakdown type
+        document.querySelectorAll('.toggle-btn[data-breakdown]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.disabled) return;
+                document.querySelectorAll('.toggle-btn[data-breakdown]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                breakdownType = this.dataset.breakdown;
+                calculateCompounding();
+            });
+        });
+
+        function addETF() {
+            etfCount++;
+            const container = document.getElementById('etfs-container');
+            const newETF = document.createElement('div');
+            newETF.className = 'etf-section';
+            newETF.innerHTML = `
+                <div class="etf-header">
+                    <span class="etf-title">ETF #${etfCount}</span>
+                    <button class="remove-btn" onclick="removeETF(this)">Remove</button>
+                </div>
+                <div class="input-group">
+                    <label>Initial Investment ($)</label>
+                    <input type="number" class="etf-initial-investment" value="10000" min="0" step="100">
+                </div>
+                <div class="input-group">
+                    <label>ETF Name</label>
+                    <input type="text" class="etf-name" placeholder="e.g., QQQ">
+                </div>
+                <div class="input-group">
+                    <label>Annual Return (%)</label>
+                    <input type="number" class="annual-return" value="12" min="0" max="50" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>Expense Ratio (%)</label>
+                    <input type="number" class="expense-ratio" value="0.20" min="0" max="5" step="0.01">
+                </div>
+            `;
+            container.appendChild(newETF);
+        }
+
+        function removeETF(button) {
+            const etfSection = button.closest('.etf-section');
+            etfSection.remove();
+        }
+
+        function calculateCompounding() {
+            // Global parameters
+            const monthlyContribution = parseFloat(document.getElementById('monthly-contribution').value) || 0;
+            const years = parseInt(document.getElementById('time-period').value) || 1;
+            
+            const etfSections = document.querySelectorAll('.etf-section');
+            const results = [];
+
+            etfSections.forEach((section, index) => {
+                // Per-ETF parameters
+                const initialInvestment = parseFloat(section.querySelector('.etf-initial-investment').value) || 0;
+                const name = section.querySelector('.etf-name').value || `ETF #${index + 1}`;
+                const annualReturn = parseFloat(section.querySelector('.annual-return').value) || 0;
+                const expenseRatio = parseFloat(section.querySelector('.expense-ratio').value) || 0;
+                
+                const netAnnualReturn = annualReturn - expenseRatio;
+                let finalAmount, totalContributions;
+                
+                if (compoundingFrequency === 'monthly') {
+                    const monthlyRate = netAnnualReturn / 100 / 12;
+                    const months = years * 12;
+                    const futureValueInitial = initialInvestment * Math.pow(1 + monthlyRate, months);
+                    const futureValueContributions = monthlyContribution * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+                    finalAmount = futureValueInitial + futureValueContributions;
+                    totalContributions = initialInvestment + (monthlyContribution * months);
+                } else {
+                    const yearlyRate = netAnnualReturn / 100;
+                    let amount = initialInvestment;
+                    const yearlyContribution = monthlyContribution * 12;
+                    for (let year = 1; year <= years; year++) {
+                        amount = (amount + yearlyContribution) * (1 + yearlyRate);
+                    }
+                    finalAmount = amount;
+                    totalContributions = initialInvestment + (yearlyContribution * years);
+                }
+                
+                const totalGains = finalAmount - totalContributions;
+                const breakdownData = calculateBreakdown(initialInvestment, monthlyContribution, netAnnualReturn, years, compoundingFrequency);
+                
+                results.push({
+                    name,
+                    finalAmount,
+                    totalContributions,
+                    totalGains,
+                    breakdownData,
+                    annualReturn,
+                    expenseRatio,
+                    netAnnualReturn,
+                    roiPercentage: (totalGains / totalContributions) * 100
+                });
+            });
+
+            displayResults(results, years);
+        }
+
+        function calculateBreakdown(initial, monthlyContrib, netAnnualReturn, totalYears, frequency) {
+            const breakdown = [];
+            let amount = initial;
+            const yearlyContrib = monthlyContrib * 12;
+            const rate = netAnnualReturn / 100;
+
+            if (frequency === 'monthly') {
+                const monthlyRate = rate / 12;
+                for (let year = 1; year <= totalYears; year++) {
+                    for (let month = 1; month <= 12; month++) {
+                        const startOfMonthAmount = amount;
+                        amount = startOfMonthAmount * (1 + monthlyRate) + monthlyContrib;
+                        const interest = amount - startOfMonthAmount - monthlyContrib;
+                        breakdown.push({ type: 'month', year, month, amount, interest });
+                    }
+                }
+            } else { // yearly frequency
+                for (let year = 1; year <= totalYears; year++) {
+                    const startOfYearAmount = amount;
+                    amount = (startOfYearAmount + yearlyContrib) * (1 + rate);
+                    const interest = amount - startOfYearAmount - yearlyContrib;
+                    breakdown.push({ type: 'year', year, amount, interest });
+                }
+            }
+            return breakdown;
+        }
+
+        function displayResults(results, years) {
+            if (results.length === 0) return;
+
+            results.sort((a, b) => b.finalAmount - a.finalAmount);
+            const bestPerformer = results[0];
+
+            let html = `
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>ETF</th>
+                            <th>Annual Return</th>
+                            <th>Expense Ratio</th>
+                            <th>Net Return</th>
+                            <th>Final Amount</th>
+                            <th>Total Gains</th>
+                            <th>ROI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            results.forEach((result, index) => {
+                const isBest = index === 0 && results.length > 1;
+                html += `
+                    <tr ${isBest ? 'class="best-performer"' : ''}>
+                        <td>${result.name}${isBest ? ' 🏆' : ''}</td>
+                        <td>${result.annualReturn.toFixed(2)}%</td>
+                        <td>${result.expenseRatio.toFixed(2)}%</td>
+                        <td>${result.netAnnualReturn.toFixed(2)}%</td>
+                        <td>$${result.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td>$${result.totalGains.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td>${result.roiPercentage.toFixed(1)}%</td>
+                    </tr>
+                `;
+            });
+
+            const breakdownTitle = breakdownType.charAt(0).toUpperCase() + breakdownType.slice(1);
+            html += `
+                    </tbody>
+                </table>
+                <div class="chart-container">
+                    <h3>${breakdownTitle}-by-${breakdownTitle} Breakdown</h3>
+                    <div class="year-breakdown" id="yearly-breakdown">
+            `;
+
+            const format = (num) => num.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+
+            if (breakdownType === 'yearly' || compoundingFrequency === 'yearly') {
+                const yearStep = years <= 10 ? 1 : Math.ceil(years / 8);
+                for (let year = yearStep; year <= years; year += yearStep) {
+                    html += `<div class="year-card"><h4>Year ${year}</h4>`;
+                    results.forEach(result => {
+                        const yearlyPoints = result.breakdownData.filter(d => d.type === 'year' || d.month === 12);
+                        const yearData = yearlyPoints[year - 1];
+                        if (yearData) {
+                            html += `<div class="etf-result">
+                                <span>${result.name}:</span>
+                                <div class="amount">
+                                    $${format(yearData.amount)}
+                                    <span class="interest-gained">(+ $${format(yearData.interest)})</span>
+                                </div>
+                            </div>`;
+                        }
+                    });
+                    html += '</div>';
+                }
+            } else { // Monthly breakdown
+                 for (let year = 1; year <= years; year++) {
+                    html += `<div class="year-card"><h4>Year ${year}</h4>`;
+                    results.forEach(result => {
+                        html += `<h5>${result.name}</h5>`;
+                        const monthDataForYear = result.breakdownData.filter(d => d.year === year);
+                        monthDataForYear.forEach(monthData => {
+                             html += `<div class="etf-result">
+                                        <span>Month ${monthData.month}:</span>
+                                        <div class="amount">
+                                            $${format(monthData.amount)}
+                                            <span class="interest-gained">(+ $${format(monthData.interest)})</span>
+                                        </div>
+                                      </div>`;
+                        });
+                    });
+                    html += '</div>';
+                }
+            }
+
+            html += `
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                    <strong>Summary:</strong> 
+                    ${results.length > 1 ? 
+                        `The best performing scenario is <strong>${bestPerformer.name}</strong>, growing to <strong>$${bestPerformer.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong>.` :
+                        `Your investment would grow to <strong>$${bestPerformer.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong>.`
+                    }
+                    <br>
+                    For the winning scenario, total contributions were $${bestPerformer.totalContributions.toLocaleString('en-US', {minimumFractionDigits: 2})} with total gains of $${bestPerformer.totalGains.toLocaleString('en-US', {minimumFractionDigits: 2})}.
+                </div>
+            `;
+            document.getElementById('results-content').innerHTML = html;
+        }
+
+        // Initialize with default calculation
+        window.addEventListener('load', function() {
+            calculateCompounding();
+        });
+    </script>
+</body>
+</html>
