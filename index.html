@@ -15,52 +15,52 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 2vw; /* Scale padding with viewport */
             color: #333;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: min(1200px, 95vw); /* Limit width but scale for smaller screens */
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
+            border-radius: 1.5rem;
+            padding: min(4vw, 30px); /* Responsive padding */
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             text-align: center;
             color: #2c3e50;
-            margin-bottom: 30px;
-            font-size: 2.5rem;
+            margin-bottom: min(3vw, 30px);
+            font-size: clamp(1.8rem, 5vw, 2.5rem); /* Responsive font size */
             font-weight: 300;
         }
 
         .calculator-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: min(3vw, 30px); /* Responsive gap */
+            margin-bottom: min(3vw, 30px);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .calculator-section {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr; /* Single column on medium screens */
             }
         }
 
         .input-section {
             background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
+            padding: min(3vw, 25px);
+            border-radius: 1rem;
             border-left: 5px solid #667eea;
         }
 
         .etf-section {
             background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            padding: min(2.5vw, 20px);
+            border-radius: 0.75rem;
+            margin-bottom: min(2vw, 15px);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             border: 1px solid #e9ecef;
         }
@@ -69,24 +69,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: min(2vw, 15px);
         }
 
         .etf-title {
             font-weight: 600;
             color: #2c3e50;
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
         }
 
         .remove-btn {
             background: #e74c3c;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: min(1vw, 8px) min(2vw, 12px);
             border-radius: 5px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem);
             transition: background 0.3s;
+            min-width: 60px; /* Touch-friendly size */
         }
 
         .remove-btn:hover {
@@ -94,22 +95,23 @@
         }
 
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: min(2.5vw, 20px);
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: min(1vw, 8px);
             font-weight: 500;
             color: #34495e;
+            font-size: clamp(0.85rem, 2.8vw, 0.95rem);
         }
 
         input, select {
             width: 100%;
-            padding: 12px;
+            padding: min(1.5vw, 12px);
             border: 2px solid #e9ecef;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: clamp(0.85rem, 2.8vw, 1rem);
             transition: border-color 0.3s, box-shadow 0.3s;
         }
 
@@ -123,14 +125,15 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: min(1.5vw, 12px) min(3vw, 24px);
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: clamp(0.85rem, 2.8vw, 1rem);
             font-weight: 500;
             transition: transform 0.2s, box-shadow 0.2s;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            margin-right: min(1.5vw, 10px);
+            margin-bottom: min(1.5vw, 10px);
+            min-width: 100px; /* Touch-friendly size */
         }
 
         .btn:hover {
@@ -148,24 +151,25 @@
 
         .results-section {
             background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
+            padding: min(3vw, 25px);
+            border-radius: 1rem;
             border-left: 5px solid #28a745;
         }
 
         .comparison-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: min(2.5vw, 20px);
             background: white;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
         }
 
         .comparison-table th,
         .comparison-table td {
-            padding: 15px;
+            padding: min(1.5vw, 12px);
             text-align: left;
             border-bottom: 1px solid #e9ecef;
         }
@@ -174,6 +178,9 @@
             background: #667eea;
             color: white;
             font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
 
         .comparison-table tr:hover {
@@ -186,10 +193,10 @@
         }
 
         .chart-container {
-            margin-top: 30px;
+            margin-top: min(3vw, 30px);
             background: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: min(2.5vw, 20px);
+            border-radius: 0.75rem;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
@@ -198,7 +205,7 @@
             background: #e9ecef;
             border-radius: 10px;
             overflow: hidden;
-            margin: 10px 0;
+            margin: min(1.5vw, 10px) 0;
         }
 
         .progress-fill {
@@ -209,16 +216,17 @@
         .breakdown-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: min(2.5vw, 20px);
             background: white;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            font-size: clamp(0.75rem, 2.5vw, 0.85rem);
         }
 
         .breakdown-table th,
         .breakdown-table td {
-            padding: 12px;
+            padding: min(1.5vw, 12px);
             text-align: center;
             border-bottom: 1px solid #e9ecef;
             border-right: 1px solid #e9ecef;
@@ -233,6 +241,9 @@
             background: #667eea;
             color: white;
             font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
 
         .breakdown-table tr:hover {
@@ -244,15 +255,16 @@
         }
 
         .breakdown-table .interest-gained {
-            font-size: 0.8em;
+            font-size: clamp(0.65rem, 2vw, 0.75rem);
             color: #28a745;
             display: block;
         }
 
         .compounding-toggle {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: min(1.5vw, 10px);
+            margin-bottom: min(2.5vw, 20px);
             align-items: center;
         }
 
@@ -264,11 +276,13 @@
         }
 
         .toggle-btn {
-            padding: 8px 16px;
+            padding: min(1vw, 8px) min(2vw, 16px);
             border: none;
             background: transparent;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            min-width: 60px; /* Touch-friendly size */
         }
 
         .toggle-btn.active {
@@ -282,11 +296,56 @@
             background: #f0f0f0;
         }
 
-        @media (max-width: 768px) {
-            .breakdown-table {
+        /* Enhanced mobile responsiveness */
+        @media (max-width: 900px) {
+            .comparison-table, .breakdown-table {
                 display: block;
                 overflow-x: auto;
                 white-space: nowrap;
+                -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            }
+
+            .comparison-table th,
+            .comparison-table td,
+            .breakdown-table th,
+            .breakdown-table td {
+                min-width: 100px; /* Ensure columns are wide enough */
+                padding: min(2vw, 10px);
+            }
+
+            .input-group input {
+                font-size: clamp(0.8rem, 3.5vw, 0.95rem);
+            }
+
+            .btn, .remove-btn, .toggle-btn {
+                padding: min(2vw, 10px) min(3vw, 20px);
+                font-size: clamp(0.8rem, 3.5vw, 0.95rem);
+            }
+
+            h2 {
+                font-size: clamp(1.2rem, 4vw, 1.5rem);
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 3vw;
+            }
+
+            .container {
+                padding: min(5vw, 20px);
+            }
+
+            .etf-section {
+                padding: min(3vw, 15px);
+            }
+
+            .input-group {
+                margin-bottom: min(3vw, 15px);
+            }
+
+            label {
+                font-size: clamp(0.8rem, 3.5vw, 0.9rem);
             }
         }
     </style>
@@ -346,7 +405,7 @@
 
             <div class="results-section">
                 <h2>Comparison Results</h2>
-                <div class="compounding-toggle" style="margin-top:15px;">
+                <div class="compounding-toggle" style="margin-top:min(2vw, 15px);">
                     <label>Breakdown View:</label>
                     <div class="toggle-group">
                         <button class="toggle-btn active" data-breakdown="yearly" aria-label="Select yearly breakdown" aria-pressed="true">Yearly</button>
@@ -601,7 +660,7 @@
                 const progressPercentage = maxFinalAmount > 0 ? (result.finalAmount / maxFinalAmount) * 100 : 0;
                 const color = ['#667eea', '#764ba2', '#28a745', '#e74c3c', '#17a2b8'][results.indexOf(result) % 5];
                 html += `
-                    <div style="margin-bottom: 10px;">
+                    <div style="margin-bottom: min(1.5vw, 10px);">
                         <span>${result.name}: $${result.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${progressPercentage}%; background: ${color};"></div>
@@ -612,7 +671,7 @@
 
             const breakdownTitle = breakdownType.charAt(0).toUpperCase() + breakdownType.slice(1);
             html += `
-                    <h3 style="margin-top: 20px;">${breakdownTitle} Breakdown</h3>
+                    <h3 style="margin-top: min(2.5vw, 20px);">${breakdownTitle} Breakdown</h3>
                     <table class="breakdown-table">
                         <thead>
                             <tr>
@@ -669,7 +728,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div style="margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                <div style="margin-top: min(2.5vw, 20px); padding: min(2vw, 15px); background: #e8f4f8; border-radius: 8px; border-left: 4px solid #17a2b8;">
                     <strong>Summary:</strong> 
                     ${results.length > 1 ? 
                         `The best performing scenario is <strong>${bestPerformer.name}</strong>, growing to <strong>$${bestPerformer.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong>.` :
