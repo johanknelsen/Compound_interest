@@ -15,16 +15,16 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 2vw; /* Scale padding with viewport */
+            padding: 2vw;
             color: #333;
         }
 
         .container {
-            max-width: min(1200px, 95vw); /* Limit width but scale for smaller screens */
+            max-width: min(1200px, 95vw);
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 1.5rem;
-            padding: min(4vw, 30px); /* Responsive padding */
+            padding: min(4vw, 30px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
@@ -32,20 +32,20 @@
             text-align: center;
             color: #2c3e50;
             margin-bottom: min(3vw, 30px);
-            font-size: clamp(1.8rem, 5vw, 2.5rem); /* Responsive font size */
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
             font-weight: 300;
         }
 
         .calculator-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: min(3vw, 30px); /* Responsive gap */
+            gap: min(3vw, 30px);
             margin-bottom: min(3vw, 30px);
         }
 
         @media (max-width: 900px) {
             .calculator-section {
-                grid-template-columns: 1fr; /* Single column on medium screens */
+                grid-template-columns: 1fr;
             }
         }
 
@@ -87,7 +87,7 @@
             cursor: pointer;
             font-size: clamp(0.7rem, 2.5vw, 0.8rem);
             transition: background 0.3s;
-            min-width: 60px; /* Touch-friendly size */
+            min-width: 60px;
         }
 
         .remove-btn:hover {
@@ -133,7 +133,7 @@
             transition: transform 0.2s, box-shadow 0.2s;
             margin-right: min(1.5vw, 10px);
             margin-bottom: min(1.5vw, 10px);
-            min-width: 100px; /* Touch-friendly size */
+            min-width: 100px;
         }
 
         .btn:hover {
@@ -254,10 +254,18 @@
             font-weight: 600;
         }
 
-        .breakdown-table .interest-gained {
+        .breakdown-table .interest-gained,
+        .breakdown-table .withdrawal {
             font-size: clamp(0.65rem, 2vw, 0.75rem);
-            color: #28a745;
             display: block;
+        }
+
+        .breakdown-table .interest-gained {
+            color: #28a745;
+        }
+
+        .breakdown-table .withdrawal {
+            color: #e74c3c;
         }
 
         .compounding-toggle {
@@ -282,7 +290,7 @@
             cursor: pointer;
             transition: all 0.3s;
             font-size: clamp(0.8rem, 2.5vw, 0.9rem);
-            min-width: 60px; /* Touch-friendly size */
+            min-width: 60px;
         }
 
         .toggle-btn.active {
@@ -296,20 +304,19 @@
             background: #f0f0f0;
         }
 
-        /* Enhanced mobile responsiveness */
         @media (max-width: 900px) {
             .comparison-table, .breakdown-table {
                 display: block;
                 overflow-x: auto;
                 white-space: nowrap;
-                -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+                -webkit-overflow-scrolling: touch;
             }
 
             .comparison-table th,
             .comparison-table td,
             .breakdown-table th,
             .breakdown-table td {
-                min-width: 100px; /* Ensure columns are wide enough */
+                min-width: 100px;
                 padding: min(2vw, 10px);
             }
 
@@ -385,8 +392,16 @@
                             <input type="text" class="etf-name" value="Example" placeholder="e.g., Example" aria-label="Name of ETF 1">
                         </div>
                         <div class="input-group">
+                            <label>Start Year (Offset from Now)</label>
+                            <input type="number" class="etf-start-year" value="0" min="0" max="50" step="1" aria-label="Start Year Offset for ETF 1">
+                        </div>
+                        <div class="input-group">
                             <label>Annual Contribution ($)</label>
                             <input type="number" class="etf-annual-contribution" value="6000" min="0" step="100" aria-label="Annual Contribution for ETF 1 in Dollars">
+                        </div>
+                        <div class="input-group">
+                            <label>Annual Withdrawal ($)</label>
+                            <input type="number" class="etf-annual-withdrawal" value="0" min="0" step="100" aria-label="Annual Withdrawal for ETF 1 in Dollars">
                         </div>
                         <div class="input-group">
                             <label>Annual Return (%)</label>
@@ -403,7 +418,7 @@
                 <button class="btn" onclick="calculateCompounding()" aria-label="Calculate ETF growth">Calculate</button>
             </div>
 
-            <div class="results-section">
+            <div class="results-section" aria-live="polite">
                 <h2>Comparison Results</h2>
                 <div class="compounding-toggle" style="margin-top:min(2vw, 15px);">
                     <label>Breakdown View:</label>
@@ -486,8 +501,16 @@
                     <input type="text" class="etf-name" placeholder="e.g., QQQ" aria-label="Name of ETF ${etfCount}">
                 </div>
                 <div class="input-group">
+                    <label>Start Year (Offset from Now)</label>
+                    <input type="number" class="etf-start-year" value="0" min="0" max="50" step="1" aria-label="Start Year Offset for ETF ${etfCount}">
+                </div>
+                <div class="input-group">
                     <label>Annual Contribution ($)</label>
                     <input type="number" class="etf-annual-contribution" value="6000" min="0" step="100" aria-label="Annual Contribution for ETF ${etfCount} in Dollars">
+                </div>
+                <div class="input-group">
+                    <label>Annual Withdrawal ($)</label>
+                    <input type="number" class="etf-annual-withdrawal" value="0" min="0" step="100" aria-label="Annual Withdrawal for ETF ${etfCount} in Dollars">
                 </div>
                 <div class="input-group">
                     <label>Annual Return (%)</label>
@@ -507,7 +530,6 @@
         }
 
         function calculateCompounding() {
-            // Input validation
             const years = parseInt(document.getElementById('time-period').value) || 1;
             if (years < 1 || years > 50) {
                 alert('Please ensure time period is between 1 and 50 years.');
@@ -516,96 +538,177 @@
 
             const etfSections = document.querySelectorAll('.etf-section');
             const results = [];
-
+            const errors = [];
             let maxFinalAmount = 0;
 
             etfSections.forEach((section, index) => {
                 const initialInvestment = parseFloat(section.querySelector('.etf-initial-investment').value) || 0;
                 const name = section.querySelector('.etf-name').value || `ETF #${index + 1}`;
+                const startYear = parseInt(section.querySelector('.etf-start-year').value) || 0;
                 const annualContribution = parseFloat(section.querySelector('.etf-annual-contribution').value) || 0;
+                const annualWithdrawal = parseFloat(section.querySelector('.etf-annual-withdrawal').value) || 0;
                 const annualReturn = parseFloat(section.querySelector('.annual-return').value) || 0;
                 const expenseRatio = parseFloat(section.querySelector('.expense-ratio').value) || 0;
 
-                if (initialInvestment < 0 || annualContribution < 0 || annualReturn < 0 || expenseRatio < 0 || annualReturn > 50 || expenseRatio > 5) {
-                    alert(`Invalid inputs for ${name}. Ensure all values are non-negative and within reasonable ranges.`);
+                if (initialInvestment < 0 || annualContribution < 0 || annualWithdrawal < 0 || annualReturn < 0 || expenseRatio < 0 || annualReturn > 50 || expenseRatio > 5 || startYear < 0 || startYear >= years) {
+                    errors.push(`Invalid inputs for ${name}. Ensure all values are non-negative, within reasonable ranges, and start year is less than total time period.`);
                     return;
                 }
 
                 const netAnnualReturn = annualReturn - expenseRatio;
-                let finalAmount, totalContributions;
+                let finalAmount, totalContributions, totalWithdrawals;
 
                 if (compoundingFrequency === 'monthly') {
                     const monthlyRate = netAnnualReturn / 100 / 12;
                     const months = years * 12;
-                    let amount = initialInvestment;
+                    let amount = startYear === 0 ? initialInvestment : 0;
+                    totalContributions = startYear === 0 ? initialInvestment : 0;
+                    totalWithdrawals = 0;
+
                     for (let year = 1; year <= years; year++) {
-                        // Apply annual contribution at the start of each year
-                        amount += annualContribution;
-                        // Compound monthly for the year
+                        if (year - 1 >= startYear) {
+                            amount += annualContribution;
+                            totalContributions += annualContribution;
+                        }
                         for (let month = 1; month <= 12; month++) {
-                            amount = monthlyRate === 0 ? amount : amount * (1 + monthlyRate);
+                            if (year - 1 >= startYear) {
+                                amount = monthlyRate === 0 ? amount : amount * (1 + monthlyRate);
+                            }
+                        }
+                        if (year - 1 >= startYear) {
+                            amount = Math.max(0, amount - annualWithdrawal);
+                            totalWithdrawals += annualWithdrawal;
                         }
                     }
                     finalAmount = amount;
-                    totalContributions = initialInvestment + (annualContribution * years);
                 } else {
                     const yearlyRate = netAnnualReturn / 100;
-                    let amount = initialInvestment;
+                    let amount = startYear === 0 ? initialInvestment : 0;
+                    totalContributions = startYear === 0 ? initialInvestment : 0;
+                    totalWithdrawals = 0;
+
                     for (let year = 1; year <= years; year++) {
-                        amount = (amount + annualContribution) * (1 + yearlyRate);
+                        if (year - 1 >= startYear) {
+                            amount = (amount + annualContribution) * (1 + yearlyRate);
+                            totalContributions += annualContribution;
+                            amount = Math.max(0, amount - annualWithdrawal);
+                            totalWithdrawals += annualWithdrawal;
+                        }
                     }
                     finalAmount = amount;
-                    totalContributions = initialInvestment + (annualContribution * years);
                 }
 
-                const totalGains = finalAmount - totalContributions;
-                const breakdownData = calculateBreakdown(initialInvestment, annualContribution, netAnnualReturn, years, compoundingFrequency);
+                const totalGains = finalAmount - totalContributions + totalWithdrawals;
+                const breakdownData = calculateBreakdown(
+                    initialInvestment,
+                    annualContribution,
+                    annualWithdrawal,
+                    netAnnualReturn,
+                    years,
+                    startYear,
+                    compoundingFrequency
+                );
 
                 results.push({
                     name,
                     finalAmount,
                     totalContributions,
+                    totalWithdrawals,
                     totalGains,
                     breakdownData,
                     annualReturn,
                     expenseRatio,
                     netAnnualReturn,
+                    startYear,
                     roiPercentage: totalContributions > 0 ? (totalGains / totalContributions) * 100 : 0
                 });
 
                 maxFinalAmount = Math.max(maxFinalAmount, finalAmount);
             });
 
+            if (errors.length > 0) {
+                alert(errors.join('\n'));
+                return;
+            }
+
             if (results.length > 0) {
                 displayResults(results, years, maxFinalAmount);
+            } else {
+                document.getElementById('results-content').innerHTML = '<p>No valid ETFs to display. Please check your inputs.</p>';
             }
         }
 
-        function calculateBreakdown(initial, annualContrib, netAnnualReturn, totalYears, frequency) {
+        function calculateBreakdown(initial, annualContrib, annualWithdrawal, netAnnualReturn, totalYears, startYear, frequency) {
             const breakdown = [];
-            let amount = initial;
+            let amount = startYear === 0 ? initial : 0;
             const rate = netAnnualReturn / 100;
 
             if (frequency === 'monthly') {
                 const monthlyRate = rate / 12;
                 for (let year = 1; year <= totalYears; year++) {
-                    // Add annual contribution at the start of the year
                     const startOfYearAmount = amount;
-                    amount += annualContrib;
-                    const contribInterest = amount - startOfYearAmount;
+                    if (year - 1 >= startYear) {
+                        amount += annualContrib;
+                    }
+                    const contribInterest = year - 1 >= startYear ? amount - startOfYearAmount : 0;
                     for (let month = 1; month <= 12; month++) {
                         const startOfMonthAmount = amount;
-                        amount = monthlyRate === 0 ? amount : amount * (1 + monthlyRate);
-                        const interest = amount - startOfMonthAmount;
-                        breakdown.push({ type: 'month', year, month, amount, interest, contribution: month === 1 ? contribInterest : 0 });
+                        if (year - 1 >= startYear) {
+                            amount = monthlyRate === 0 ? amount : amount * (1 + monthlyRate);
+                        }
+                        const interest = year - 1 >= startYear ? amount - startOfMonthAmount : 0;
+                        if (month === 12 && year - 1 >= startYear) {
+                            const preWithdrawalAmount = amount;
+                            amount = Math.max(0, amount - annualWithdrawal);
+                            const withdrawal = preWithdrawalAmount - amount;
+                            breakdown.push({
+                                type: 'month',
+                                year,
+                                month,
+                                amount,
+                                interest,
+                                contribution: month === 1 ? contribInterest : 0,
+                                withdrawal: month === 12 ? withdrawal : 0
+                            });
+                        } else {
+                            breakdown.push({
+                                type: 'month',
+                                year,
+                                month,
+                                amount,
+                                interest,
+                                contribution: month === 1 ? contribInterest : 0,
+                                withdrawal: 0
+                            });
+                        }
                     }
                 }
             } else {
                 for (let year = 1; year <= totalYears; year++) {
                     const startOfYearAmount = amount;
-                    amount = (amount + annualContrib) * (1 + rate);
-                    const interest = amount - startOfYearAmount - annualContrib;
-                    breakdown.push({ type: 'year', year, amount, interest, contribution: annualContrib });
+                    if (year - 1 >= startYear) {
+                        amount = (amount + annualContrib) * (1 + rate);
+                        const preWithdrawalAmount = amount;
+                        amount = Math.max(0, amount - annualWithdrawal);
+                        const interest = amount - startOfYearAmount - annualContrib + annualWithdrawal;
+                        breakdown.push({
+                            type: 'year',
+                            year,
+                            amount,
+                            interest,
+                            contribution: annualContrib,
+                            withdrawal: preWithdrawalAmount - amount
+                        });
+                    } else {
+                        breakdown.push({
+                            type: 'year',
+                            year,
+                            amount,
+                            interest: 0,
+                            contribution: 0,
+                            withdrawal: 0
+                        });
+                    }
                 }
             }
             return breakdown;
@@ -620,10 +723,12 @@
                     <thead>
                         <tr>
                             <th>ETF</th>
+                            <th>Start Year</th>
                             <th>Annual Return</th>
                             <th>Expense Ratio</th>
                             <th>Net Return</th>
                             <th>Annual Contribution</th>
+                            <th>Annual Withdrawal</th>
                             <th>Final Amount</th>
                             <th>Total Gains</th>
                             <th>ROI</th>
@@ -637,10 +742,12 @@
                 html += `
                     <tr ${isBest ? 'class="best-performer"' : ''}>
                         <td>${result.name}${isBest ? ' 🏆' : ''}</td>
+                        <td>Year ${result.startYear}</td>
                         <td>${result.annualReturn.toFixed(2)}%</td>
                         <td>${result.expenseRatio.toFixed(2)}%</td>
                         <td>${result.netAnnualReturn.toFixed(2)}%</td>
                         <td>$${result.breakdownData[0]?.contribution.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}) || '0'}</td>
+                        <td>$${result.breakdownData.find(d => d.withdrawal > 0)?.withdrawal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}) || '0'}</td>
                         <td>$${result.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                         <td>$${result.totalGains.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                         <td>${result.roiPercentage.toFixed(1)}%</td>
@@ -655,13 +762,12 @@
                     <h3>Growth Visualization</h3>
             `;
 
-            // Add progress bars for each ETF
             results.forEach(result => {
                 const progressPercentage = maxFinalAmount > 0 ? (result.finalAmount / maxFinalAmount) * 100 : 0;
                 const color = ['#667eea', '#764ba2', '#28a745', '#e74c3c', '#17a2b8'][results.indexOf(result) % 5];
                 html += `
                     <div style="margin-bottom: min(1.5vw, 10px);">
-                        <span>${result.name}: $${result.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                        <span>${result.name} (Year ${result.startYear}): $${result.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${progressPercentage}%; background: ${color};"></div>
                         </div>
@@ -691,11 +797,12 @@
                     results.forEach(result => {
                         const yearlyPoints = result.breakdownData.filter(d => d.type === 'year' || d.month === 12);
                         const yearData = yearlyPoints[year - 1];
-                        if (yearData) {
+                        if (yearData && yearData.amount > 0) {
                             html += `
                                 <td>
                                     <span class="amount">$${format(yearData.amount)}</span>
                                     <span class="interest-gained">(+ $${format(yearData.interest)})</span>
+                                    ${yearData.withdrawal > 0 ? `<span class="withdrawal">(- $${format(yearData.withdrawal)})</span>` : ''}
                                 </td>`;
                         } else {
                             html += `<td>-</td>`;
@@ -709,11 +816,12 @@
                         html += `<tr><td>Year ${year}, Month ${month}</td>`;
                         results.forEach(result => {
                             const monthData = result.breakdownData.find(d => d.year === year && d.month === month);
-                            if (monthData) {
+                            if (monthData && monthData.amount > 0) {
                                 html += `
                                     <td>
                                         <span class="amount">$${format(monthData.amount)}</span>
                                         <span class="interest-gained">(+ $${format(monthData.interest)})</span>
+                                        ${monthData.withdrawal > 0 ? `<span class="withdrawal">(- $${format(monthData.withdrawal)})</span>` : ''}
                                     </td>`;
                             } else {
                                 html += `<td>-</td>`;
@@ -731,15 +839,24 @@
                 <div style="margin-top: min(2.5vw, 20px); padding: min(2vw, 15px); background: #e8f4f8; border-radius: 8px; border-left: 4px solid #17a2b8;">
                     <strong>Summary:</strong> 
                     ${results.length > 1 ? 
-                        `The best performing scenario is <strong>${bestPerformer.name}</strong>, growing to <strong>$${bestPerformer.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong>.` :
-                        `Your investment would grow to <strong>$${bestPerformer.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong>.`
+                        `The best performing scenario is <strong>${bestPerformer.name}</strong>, starting in Year ${bestPerformer.startYear}, growing to <strong>$${bestPerformer.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong>.` :
+                        `Your investment, starting in Year ${bestPerformer.startYear}, would grow to <strong>$${bestPerformer.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong>.`
                     }
                     <br>
-                    For the winning scenario, total contributions were $${bestPerformer.totalContributions.toLocaleString('en-US', {minimumFractionDigits: 2})} with total gains of $${bestPerformer.totalGains.toLocaleString('en-US', {minimumFractionDigits: 2})}.
+                    For the winning scenario, total contributions were $${bestPerformer.totalContributions.toLocaleString('en-US', {minimumFractionDigits: 2})}, total withdrawals were $${bestPerformer.totalWithdrawals.toLocaleString('en-US', {minimumFractionDigits: 2})}, with total gains of $${bestPerformer.totalGains.toLocaleString('en-US', {minimumFractionDigits: 2})}.
                 </div>
             `;
             document.getElementById('results-content').innerHTML = html;
         }
+
+        // Input sanitization
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', function() {
+                if (isNaN(this.value) || this.value === '') {
+                    this.value = this.min || 0;
+                }
+            });
+        });
 
         // Initialize with default calculation
         window.addEventListener('load', function() {
