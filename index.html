@@ -561,21 +561,21 @@
                 if (compoundingFrequency === 'monthly') {
                     const monthlyRate = netAnnualReturn / 100 / 12;
                     const months = years * 12;
-                    let amount = startYear === 0 ? initialInvestment : 0;
-                    totalContributions = startYear === 0 ? initialInvestment : 0;
+                    let amount = 0;
+                    totalContributions = 0;
                     totalWithdrawals = 0;
 
                     for (let year = 1; year <= years; year++) {
+                        if (year - 1 === startYear) {
+                            amount += initialInvestment;
+                            totalContributions += initialInvestment;
+                        }
                         if (year - 1 >= startYear) {
                             amount += annualContribution;
                             totalContributions += annualContribution;
-                        }
-                        for (let month = 1; month <= 12; month++) {
-                            if (year - 1 >= startYear) {
+                            for (let month = 1; month <= 12; month++) {
                                 amount = monthlyRate === 0 ? amount : amount * (1 + monthlyRate);
                             }
-                        }
-                        if (year - 1 >= startYear) {
                             amount = Math.max(0, amount - annualWithdrawal);
                             totalWithdrawals += annualWithdrawal;
                         }
@@ -583,11 +583,15 @@
                     finalAmount = amount;
                 } else {
                     const yearlyRate = netAnnualReturn / 100;
-                    let amount = startYear === 0 ? initialInvestment : 0;
-                    totalContributions = startYear === 0 ? initialInvestment : 0;
+                    let amount = 0;
+                    totalContributions = 0;
                     totalWithdrawals = 0;
 
                     for (let year = 1; year <= years; year++) {
+                        if (year - 1 === startYear) {
+                            amount += initialInvestment;
+                            totalContributions += initialInvestment;
+                        }
                         if (year - 1 >= startYear) {
                             amount = (amount + annualContribution) * (1 + yearlyRate);
                             totalContributions += annualContribution;
@@ -640,17 +644,20 @@
 
         function calculateBreakdown(initial, annualContrib, annualWithdrawal, netAnnualReturn, totalYears, startYear, frequency) {
             const breakdown = [];
-            let amount = startYear === 0 ? initial : 0;
+            let amount = 0;
             const rate = netAnnualReturn / 100;
 
             if (frequency === 'monthly') {
                 const monthlyRate = rate / 12;
                 for (let year = 1; year <= totalYears; year++) {
                     const startOfYearAmount = amount;
+                    if (year - 1 === startYear) {
+                        amount += initial;
+                    }
                     if (year - 1 >= startYear) {
                         amount += annualContrib;
                     }
-                    const contribInterest = year - 1 >= startYear ? amount - startOfYearAmount : 0;
+                    const contribInterest = year - 1 >= startYear ? amount - startOfYearAmount : (year - 1 === startYear ? initial : 0);
                     for (let month = 1; month <= 12; month++) {
                         const startOfMonthAmount = amount;
                         if (year - 1 >= startYear) {
@@ -686,6 +693,9 @@
             } else {
                 for (let year = 1; year <= totalYears; year++) {
                     const startOfYearAmount = amount;
+                    if (year - 1 === startYear) {
+                        amount += initial;
+                    }
                     if (year - 1 >= startYear) {
                         amount = (amount + annualContrib) * (1 + rate);
                         const preWithdrawalAmount = amount;
@@ -696,7 +706,7 @@
                             year,
                             amount,
                             interest,
-                            contribution: annualContrib,
+                            contribution: year - 1 === startYear ? annualContrib + initial : annualContrib,
                             withdrawal: preWithdrawalAmount - amount
                         });
                     } else {
