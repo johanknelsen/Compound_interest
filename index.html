@@ -373,8 +373,8 @@
                 <div class="compounding-toggle">
                     <label>Compounding Frequency:</label>
                     <div class="toggle-group">
-                        <button class="toggle-btn active" data-frequency="monthly" aria-label="Select monthly compounding" aria-pressed="true">Monthly</button>
-                        <button class="toggle-btn" data-frequency="yearly" aria-label="Select yearly compounding" aria-pressed="false">Yearly</button>
+                        <button class="toggle-btn" data-frequency="monthly" aria-label="Select monthly compounding" aria-pressed="false">Monthly</button>
+                        <button class="toggle-btn active" data-frequency="yearly" aria-label="Select yearly compounding" aria-pressed="true">Yearly</button>
                     </div>
                 </div>
 
@@ -440,7 +440,7 @@
                     <label>Breakdown View:</label>
                     <div class="toggle-group">
                         <button class="toggle-btn active" data-breakdown="yearly" aria-label="Select yearly breakdown" aria-pressed="true">Yearly</button>
-                        <button class="toggle-btn" data-breakdown="monthly" aria-label="Select monthly breakdown" aria-pressed="false">Monthly</button>
+                        <button class="toggle-btn" data-breakdown="monthly" aria-label="Select monthly breakdown" aria-pressed="false" disabled>Monthly</button>
                     </div>
                 </div>
                 <div id="results-content">
@@ -452,7 +452,7 @@
 
     <script>
         let etfCount = 1;
-        let compoundingFrequency = 'monthly';
+        let compoundingFrequency = 'yearly'; // Default to yearly compounding
         let breakdownType = 'yearly';
 
         // Toggle compounding frequency
@@ -480,6 +480,7 @@
                 } else {
                     monthlyBreakdownBtn.disabled = false;
                 }
+                calculateCompounding(); // Recalculate on toggle change
             });
         });
 
@@ -873,8 +874,7 @@
             const format = (num) => num.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
 
             if (breakdownType === 'yearly' || compoundingFrequency === 'yearly') {
-                const yearStep = years <= 10 ? 1 : Math.ceil(years / 8);
-                for (let year = yearStep; year <= years; year += yearStep) {
+                for (let year = 1; year <= years; year++) {
                     html += `<tr><td>Year ${year}</td>`;
                     results.forEach(result => {
                         const yearlyPoints = result.breakdownData.filter(d => d.type === 'year' || d.month === 12);
