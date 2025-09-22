@@ -304,8 +304,52 @@
             background: #f0f0f0;
         }
 
+        details {
+            cursor: pointer;
+        }
+
+        summary {
+            padding: min(1.5vw, 12px);
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        summary:hover {
+            background: #e9ecef;
+        }
+
+        .monthly-breakdown {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            font-size: clamp(0.7rem, 2.2vw, 0.8rem);
+            margin: min(1vw, 8px) 0;
+        }
+
+        .monthly-breakdown th,
+        .monthly-breakdown td {
+            padding: min(1vw, 8px);
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .monthly-breakdown th:last-child,
+        .monthly-breakdown td:last-child {
+            border-right: none;
+        }
+
+        .monthly-breakdown th {
+            background: #8294e2;
+            color: white;
+        }
+
+        .monthly-breakdown tr:hover {
+            background: #f8f9fa;
+        }
+
         @media (max-width: 900px) {
-            .comparison-table, .breakdown-table {
+            .comparison-table, .breakdown-table, .monthly-breakdown {
                 display: block;
                 overflow-x: auto;
                 white-space: nowrap;
@@ -315,7 +359,9 @@
             .comparison-table th,
             .comparison-table td,
             .breakdown-table th,
-            .breakdown-table td {
+            .breakdown-table td,
+            .monthly-breakdown th,
+            .monthly-breakdown td {
                 min-width: 100px;
                 padding: min(2vw, 10px);
             }
@@ -701,7 +747,7 @@
             let amount = 0;
             const rate = netAnnualReturn / 100;
 
-            if (breakdownType === 'monthly' && frequency === 'yearly') {
+            if (breakdownType === 'monthly' && frequency === 'yearly' || breakdownType === 'yearly' && frequency === 'yearly') {
                 // Generate monthly breakdown for yearly compounding by interpolating
                 const yearlyRate = rate;
                 const monthlyRate = yearlyRate / 12; // Approximate monthly rate for display
@@ -904,7 +950,43 @@
 
             if (breakdownType === 'yearly') {
                 for (let year = 1; year <= years; year++) {
-                    html += `<tr><td>Year ${year}</td>`;
+                    html += `
+                        <tr>
+                            <td>
+                                <details aria-label="Expand Year ${year} for monthly breakdown">
+                                    <summary>Year ${year}</summary>
+                                    <table class="monthly-breakdown">
+                                        <thead>
+                                            <tr>
+                                                <th>Month</th>
+                                                ${results.map(result => `<th>${result.name}</th>`).join('')}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                    `;
+                    for (let month = 1; month <= 12; month++) {
+                        html += `<tr><td>Month ${month}</td>`;
+                        results.forEach(result => {
+                            const monthData = result.breakdownData.find(d => d.type === 'month' && d.year === year && d.month === month);
+                            if (monthData && monthData.amount > 0) {
+                                html += `
+                                    <td>
+                                        <span class="amount">$${format(monthData.amount)}</span>
+                                        <span class="interest-gained">(+ $${format(monthData.interest)})</span>
+                                        ${monthData.withdrawal > 0 ? `<span class="withdrawal">(- $${format(monthData.withdrawal)})</span>` : ''}
+                                    </td>`;
+                            } else {
+                                html += `<td>-</td>`;
+                            }
+                        });
+                        html += `</tr>`;
+                    }
+                    html += `
+                                        </tbody>
+                                    </table>
+                                </details>
+                            </td>
+                    `;
                     results.forEach(result => {
                         const yearlyPoints = result.breakdownData.filter(d => d.type === 'year' || d.month === 12);
                         const yearData = yearlyPoints[year - 1];
