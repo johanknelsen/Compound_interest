@@ -440,7 +440,7 @@
                     <label>Breakdown View:</label>
                     <div class="toggle-group">
                         <button class="toggle-btn active" data-breakdown="yearly" aria-label="Select yearly breakdown" aria-pressed="true">Yearly</button>
-                        <button class="toggle-btn" data-breakdown="monthly" aria-label="Select monthly breakdown" aria-pressed="false" disabled>Monthly</button>
+                        <button class="toggle-btn" data-breakdown="monthly" aria-label="Select monthly breakdown" aria-pressed="false">Monthly</button>
                     </div>
                 </div>
                 <div id="results-content">
@@ -465,21 +465,6 @@
                 this.classList.add('active');
                 this.setAttribute('aria-pressed', 'true');
                 compoundingFrequency = this.dataset.frequency;
-
-                const monthlyBreakdownBtn = document.querySelector('.toggle-btn[data-breakdown="monthly"]');
-                const yearlyBreakdownBtn = document.querySelector('.toggle-btn[data-breakdown="yearly"]');
-                if (compoundingFrequency === 'yearly') {
-                    monthlyBreakdownBtn.disabled = true;
-                    if (breakdownType === 'monthly') {
-                        breakdownType = 'yearly';
-                        yearlyBreakdownBtn.classList.add('active');
-                        yearlyBreakdownBtn.setAttribute('aria-pressed', 'true');
-                        monthlyBreakdownBtn.classList.remove('active');
-                        monthlyBreakdownBtn.setAttribute('aria-pressed', 'false');
-                    }
-                } else {
-                    monthlyBreakdownBtn.disabled = false;
-                }
                 calculateCompounding(); // Recalculate on toggle change
             });
         });
@@ -487,7 +472,6 @@
         // Toggle breakdown type
         document.querySelectorAll('.toggle-btn[data-breakdown]').forEach(btn => {
             btn.addEventListener('click', function() {
-                if (this.disabled) return;
                 document.querySelectorAll('.toggle-btn[data-breakdown]').forEach(b => {
                     b.classList.remove('active');
                     b.setAttribute('aria-pressed', 'false');
@@ -717,7 +701,52 @@
             let amount = 0;
             const rate = netAnnualReturn / 100;
 
-            if (frequency === 'monthly') {
+            if (breakdownType === 'monthly' && frequency === 'yearly') {
+                // Generate monthly breakdown for yearly compounding by interpolating
+                const yearlyRate = rate;
+                const monthlyRate = yearlyRate / 12; // Approximate monthly rate for display
+                for (let year = 1; year <= totalYears; year++) {
+                    const startOfYearAmount = amount;
+                    let contribThisYear = 0;
+                    if (year - 1 === startYear) {
+                        amount += initial;
+                        contribThisYear += initial;
+                    }
+                    if (year - 1 >= startYear && year - 1 >= contributionStartYear && year - 1 <= contributionEndYear) {
+                        amount += annualContrib;
+                        contribThisYear += annualContrib;
+                    }
+                    for (let month = 1; month <= 12; month++) {
+                        const startOfMonthAmount = amount;
+                        if (year - 1 >= startYear) {
+                            amount = monthlyRate === 0 ? amount : amount * (1 + monthlyRate);
+                        }
+                        const interest = year - 1 >= startYear ? amount - startOfMonthAmount : 0;
+                        let withdrawal = 0;
+                        if (month === 12 && year - 1 >= startYear && year - 1 >= withdrawalStartYear && year - 1 <= withdrawalEndYear) {
+                            const preWithdrawalAmount = amount;
+                            amount = Math.max(0, amount - annualWithdrawal);
+                            withdrawal = preWithdrawalAmount - amount;
+                        }
+                        breakdown.push({
+                            type: 'month',
+                            year,
+                            month,
+                            amount,
+                            interest,
+                            contribution: month === 1 ? contribThisYear : 0,
+                            withdrawal
+                        });
+                    }
+                    // Adjust amount to match yearly compounding at year-end
+                    const yearEndAmount = year - 1 === startYear 
+                        ? (initial + (year - 1 >= contributionStartYear && year - 1 <= contributionEndYear ? annualContrib : 0)) * (1 + yearlyRate)
+                        : (startOfYearAmount + (year - 1 >= contributionStartYear && year - 1 <= contributionEndYear ? annualContrib : 0)) * (1 + yearlyRate);
+                    amount = year - 1 >= withdrawalStartYear && year - 1 <= withdrawalEndYear 
+                        ? Math.max(0, yearEndAmount - annualWithdrawal) 
+                        : yearEndAmount;
+                }
+            } else if (frequency === 'monthly') {
                 const monthlyRate = rate / 12;
                 for (let year = 1; year <= totalYears; year++) {
                     const startOfYearAmount = amount;
@@ -864,7 +893,7 @@
                     <table class="breakdown-table">
                         <thead>
                             <tr>
-                                <th>${breakdownType === 'yearly' || compoundingFrequency === 'yearly' ? 'Year' : 'Year/Month'}</th>
+                                <th>${breakdownType === 'yearly' ? 'Year' : 'Year/Month'}</th>
                                 ${results.map(result => `<th>${result.name}</th>`).join('')}
                             </tr>
                         </thead>
@@ -873,7 +902,7 @@
 
             const format = (num) => num.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
 
-            if (breakdownType === 'yearly' || compoundingFrequency === 'yearly') {
+            if (breakdownType === 'yearly') {
                 for (let year = 1; year <= years; year++) {
                     html += `<tr><td>Year ${year}</td>`;
                     results.forEach(result => {
