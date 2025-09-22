@@ -392,12 +392,28 @@
                             <input type="text" class="etf-name" value="Example" placeholder="e.g., Example" aria-label="Name of ETF 1">
                         </div>
                         <div class="input-group">
-                            <label>Start Year (Offset from Now)</label>
-                            <input type="number" class="etf-start-year" value="0" min="0" max="50" step="1" aria-label="Start Year Offset for ETF 1">
+                            <label>Investment Start Year (Offset from Now)</label>
+                            <input type="number" class="etf-start-year" value="0" min="0" max="50" step="1" aria-label="Investment Start Year Offset for ETF 1">
+                        </div>
+                        <div class="input-group">
+                            <label>Contribution Start Year (Offset from Now)</label>
+                            <input type="number" class="etf-contribution-start-year" value="0" min="0" max="50" step="1" aria-label="Contribution Start Year Offset for ETF 1">
+                        </div>
+                        <div class="input-group">
+                            <label>Contribution End Year (Offset from Now)</label>
+                            <input type="number" class="etf-contribution-end-year" value="9" min="0" max="50" step="1" aria-label="Contribution End Year Offset for ETF 1">
                         </div>
                         <div class="input-group">
                             <label>Annual Contribution ($)</label>
                             <input type="number" class="etf-annual-contribution" value="6000" min="0" step="100" aria-label="Annual Contribution for ETF 1 in Dollars">
+                        </div>
+                        <div class="input-group">
+                            <label>Withdrawal Start Year (Offset from Now)</label>
+                            <input type="number" class="etf-withdrawal-start-year" value="0" min="0" max="50" step="1" aria-label="Withdrawal Start Year Offset for ETF 1">
+                        </div>
+                        <div class="input-group">
+                            <label>Withdrawal End Year (Offset from Now)</label>
+                            <input type="number" class="etf-withdrawal-end-year" value="9" min="0" max="50" step="1" aria-label="Withdrawal End Year Offset for ETF 1">
                         </div>
                         <div class="input-group">
                             <label>Annual Withdrawal ($)</label>
@@ -501,12 +517,28 @@
                     <input type="text" class="etf-name" placeholder="e.g., QQQ" aria-label="Name of ETF ${etfCount}">
                 </div>
                 <div class="input-group">
-                    <label>Start Year (Offset from Now)</label>
-                    <input type="number" class="etf-start-year" value="0" min="0" max="50" step="1" aria-label="Start Year Offset for ETF ${etfCount}">
+                    <label>Investment Start Year (Offset from Now)</label>
+                    <input type="number" class="etf-start-year" value="0" min="0" max="50" step="1" aria-label="Investment Start Year Offset for ETF ${etfCount}">
+                </div>
+                <div class="input-group">
+                    <label>Contribution Start Year (Offset from Now)</label>
+                    <input type="number" class="etf-contribution-start-year" value="0" min="0" max="50" step="1" aria-label="Contribution Start Year Offset for ETF ${etfCount}">
+                </div>
+                <div class="input-group">
+                    <label>Contribution End Year (Offset from Now)</label>
+                    <input type="number" class="etf-contribution-end-year" value="9" min="0" max="50" step="1" aria-label="Contribution End Year Offset for ETF ${etfCount}">
                 </div>
                 <div class="input-group">
                     <label>Annual Contribution ($)</label>
                     <input type="number" class="etf-annual-contribution" value="6000" min="0" step="100" aria-label="Annual Contribution for ETF ${etfCount} in Dollars">
+                </div>
+                <div class="input-group">
+                    <label>Withdrawal Start Year (Offset from Now)</label>
+                    <input type="number" class="etf-withdrawal-start-year" value="0" min="0" max="50" step="1" aria-label="Withdrawal Start Year Offset for ETF ${etfCount}">
+                </div>
+                <div class="input-group">
+                    <label>Withdrawal End Year (Offset from Now)</label>
+                    <input type="number" class="etf-withdrawal-end-year" value="9" min="0" max="50" step="1" aria-label="Withdrawal End Year Offset for ETF ${etfCount}">
                 </div>
                 <div class="input-group">
                     <label>Annual Withdrawal ($)</label>
@@ -545,13 +577,33 @@
                 const initialInvestment = parseFloat(section.querySelector('.etf-initial-investment').value) || 0;
                 const name = section.querySelector('.etf-name').value || `ETF #${index + 1}`;
                 const startYear = parseInt(section.querySelector('.etf-start-year').value) || 0;
+                const contributionStartYear = parseInt(section.querySelector('.etf-contribution-start-year').value) || 0;
+                const contributionEndYear = parseInt(section.querySelector('.etf-contribution-end-year').value) || years - 1;
                 const annualContribution = parseFloat(section.querySelector('.etf-annual-contribution').value) || 0;
+                const withdrawalStartYear = parseInt(section.querySelector('.etf-withdrawal-start-year').value) || 0;
+                const withdrawalEndYear = parseInt(section.querySelector('.etf-withdrawal-end-year').value) || years - 1;
                 const annualWithdrawal = parseFloat(section.querySelector('.etf-annual-withdrawal').value) || 0;
                 const annualReturn = parseFloat(section.querySelector('.annual-return').value) || 0;
                 const expenseRatio = parseFloat(section.querySelector('.expense-ratio').value) || 0;
 
-                if (initialInvestment < 0 || annualContribution < 0 || annualWithdrawal < 0 || annualReturn < 0 || expenseRatio < 0 || annualReturn > 50 || expenseRatio > 5 || startYear < 0 || startYear >= years) {
-                    errors.push(`Invalid inputs for ${name}. Ensure all values are non-negative, within reasonable ranges, and start year is less than total time period.`);
+                if (
+                    initialInvestment < 0 ||
+                    annualContribution < 0 ||
+                    annualWithdrawal < 0 ||
+                    annualReturn < 0 ||
+                    expenseRatio < 0 ||
+                    annualReturn > 50 ||
+                    expenseRatio > 5 ||
+                    startYear < 0 ||
+                    startYear >= years ||
+                    contributionStartYear < 0 ||
+                    contributionStartYear > contributionEndYear ||
+                    contributionEndYear >= years ||
+                    withdrawalStartYear < 0 ||
+                    withdrawalStartYear > withdrawalEndYear ||
+                    withdrawalEndYear >= years
+                ) {
+                    errors.push(`Invalid inputs for ${name}. Ensure all values are non-negative, within reasonable ranges, start years are less than end years, and all years are within the total time period.`);
                     return;
                 }
 
@@ -571,13 +623,17 @@
                             totalContributions += initialInvestment;
                         }
                         if (year - 1 >= startYear) {
-                            amount += annualContribution;
-                            totalContributions += annualContribution;
+                            if (year - 1 >= contributionStartYear && year - 1 <= contributionEndYear) {
+                                amount += annualContribution;
+                                totalContributions += annualContribution;
+                            }
                             for (let month = 1; month <= 12; month++) {
                                 amount = monthlyRate === 0 ? amount : amount * (1 + monthlyRate);
                             }
-                            amount = Math.max(0, amount - annualWithdrawal);
-                            totalWithdrawals += annualWithdrawal;
+                            if (year - 1 >= withdrawalStartYear && year - 1 <= withdrawalEndYear) {
+                                amount = Math.max(0, amount - annualWithdrawal);
+                                totalWithdrawals += annualWithdrawal;
+                            }
                         }
                     }
                     finalAmount = amount;
@@ -593,10 +649,15 @@
                             totalContributions += initialInvestment;
                         }
                         if (year - 1 >= startYear) {
-                            amount = (amount + annualContribution) * (1 + yearlyRate);
-                            totalContributions += annualContribution;
-                            amount = Math.max(0, amount - annualWithdrawal);
-                            totalWithdrawals += annualWithdrawal;
+                            if (year - 1 >= contributionStartYear && year - 1 <= contributionEndYear) {
+                                amount += annualContribution;
+                                totalContributions += annualContribution;
+                            }
+                            amount = (amount) * (1 + yearlyRate);
+                            if (year - 1 >= withdrawalStartYear && year - 1 <= withdrawalEndYear) {
+                                amount = Math.max(0, amount - annualWithdrawal);
+                                totalWithdrawals += annualWithdrawal;
+                            }
                         }
                     }
                     finalAmount = amount;
@@ -610,6 +671,10 @@
                     netAnnualReturn,
                     years,
                     startYear,
+                    contributionStartYear,
+                    contributionEndYear,
+                    withdrawalStartYear,
+                    withdrawalEndYear,
                     compoundingFrequency
                 );
 
@@ -624,6 +689,10 @@
                     expenseRatio,
                     netAnnualReturn,
                     startYear,
+                    contributionStartYear,
+                    contributionEndYear,
+                    withdrawalStartYear,
+                    withdrawalEndYear,
                     roiPercentage: totalContributions > 0 ? (totalGains / totalContributions) * 100 : 0
                 });
 
@@ -642,7 +711,7 @@
             }
         }
 
-        function calculateBreakdown(initial, annualContrib, annualWithdrawal, netAnnualReturn, totalYears, startYear, frequency) {
+        function calculateBreakdown(initial, annualContrib, annualWithdrawal, netAnnualReturn, totalYears, startYear, contributionStartYear, contributionEndYear, withdrawalStartYear, withdrawalEndYear, frequency) {
             const breakdown = [];
             let amount = 0;
             const rate = netAnnualReturn / 100;
@@ -654,17 +723,17 @@
                     if (year - 1 === startYear) {
                         amount += initial;
                     }
-                    if (year - 1 >= startYear) {
+                    if (year - 1 >= startYear && year - 1 >= contributionStartYear && year - 1 <= contributionEndYear) {
                         amount += annualContrib;
                     }
-                    const contribInterest = year - 1 >= startYear ? amount - startOfYearAmount : (year - 1 === startYear ? initial : 0);
+                    const contribInterest = year - 1 >= startYear && year - 1 >= contributionStartYear && year - 1 <= contributionEndYear ? annualContrib : (year - 1 === startYear ? initial : 0);
                     for (let month = 1; month <= 12; month++) {
                         const startOfMonthAmount = amount;
                         if (year - 1 >= startYear) {
                             amount = monthlyRate === 0 ? amount : amount * (1 + monthlyRate);
                         }
                         const interest = year - 1 >= startYear ? amount - startOfMonthAmount : 0;
-                        if (month === 12 && year - 1 >= startYear) {
+                        if (month === 12 && year - 1 >= startYear && year - 1 >= withdrawalStartYear && year - 1 <= withdrawalEndYear) {
                             const preWithdrawalAmount = amount;
                             amount = Math.max(0, amount - annualWithdrawal);
                             const withdrawal = preWithdrawalAmount - amount;
@@ -696,29 +765,28 @@
                     if (year - 1 === startYear) {
                         amount += initial;
                     }
+                    if (year - 1 >= startYear && year - 1 >= contributionStartYear && year - 1 <= contributionEndYear) {
+                        amount += annualContrib;
+                    }
                     if (year - 1 >= startYear) {
-                        amount = (amount + annualContrib) * (1 + rate);
+                        amount = (amount) * (1 + rate);
+                    }
+                    const interest = year - 1 >= startYear ? amount - startOfYearAmount - (year - 1 >= contributionStartYear && year - 1 <= contributionEndYear ? annualContrib : 0) : 0;
+                    const contribution = year - 1 === startYear ? (initial + (year - 1 >= contributionStartYear && year - 1 <= contributionEndYear ? annualContrib : 0)) : (year - 1 >= contributionStartYear && year - 1 <= contributionEndYear ? annualContrib : 0);
+                    let withdrawal = 0;
+                    if (year - 1 >= startYear && year - 1 >= withdrawalStartYear && year - 1 <= withdrawalEndYear) {
                         const preWithdrawalAmount = amount;
                         amount = Math.max(0, amount - annualWithdrawal);
-                        const interest = amount - startOfYearAmount - annualContrib + annualWithdrawal;
-                        breakdown.push({
-                            type: 'year',
-                            year,
-                            amount,
-                            interest,
-                            contribution: year - 1 === startYear ? annualContrib + initial : annualContrib,
-                            withdrawal: preWithdrawalAmount - amount
-                        });
-                    } else {
-                        breakdown.push({
-                            type: 'year',
-                            year,
-                            amount,
-                            interest: 0,
-                            contribution: 0,
-                            withdrawal: 0
-                        });
+                        withdrawal = preWithdrawalAmount - amount;
                     }
+                    breakdown.push({
+                        type: 'year',
+                        year,
+                        amount,
+                        interest,
+                        contribution,
+                        withdrawal
+                    });
                 }
             }
             return breakdown;
@@ -733,7 +801,9 @@
                     <thead>
                         <tr>
                             <th>ETF</th>
-                            <th>Start Year</th>
+                            <th>Investment Start</th>
+                            <th>Contribution Period</th>
+                            <th>Withdrawal Period</th>
                             <th>Annual Return</th>
                             <th>Expense Ratio</th>
                             <th>Net Return</th>
@@ -753,10 +823,12 @@
                     <tr ${isBest ? 'class="best-performer"' : ''}>
                         <td>${result.name}${isBest ? ' 🏆' : ''}</td>
                         <td>Year ${result.startYear}</td>
+                        <td>Year ${result.contributionStartYear} - ${result.contributionEndYear}</td>
+                        <td>Year ${result.withdrawalStartYear} - ${result.withdrawalEndYear}</td>
                         <td>${result.annualReturn.toFixed(2)}%</td>
                         <td>${result.expenseRatio.toFixed(2)}%</td>
                         <td>${result.netAnnualReturn.toFixed(2)}%</td>
-                        <td>$${result.breakdownData[0]?.contribution.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}) || '0'}</td>
+                        <td>$${result.breakdownData.find(d => d.contribution > 0)?.contribution.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}) || '0'}</td>
                         <td>$${result.breakdownData.find(d => d.withdrawal > 0)?.withdrawal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0}) || '0'}</td>
                         <td>$${result.finalAmount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                         <td>$${result.totalGains.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
