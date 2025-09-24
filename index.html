@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETF Compound Interest Calculator</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-slider-pips/1.11.4/jquery-ui-slider-pips.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,600" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,7 +15,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 2vw;
@@ -113,7 +116,7 @@
             font-size: clamp(0.85rem, 2.8vw, 0.95rem);
         }
 
-        input, select {
+        input[type="number"], input[type="text"], select {
             width: 100%;
             padding: min(1.5vw, 12px);
             border: 2px solid #e9ecef;
@@ -122,55 +125,23 @@
             transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        input:focus, select:focus {
+        input[type="number"]:focus, input[type="text"]:focus, select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            height: 8px;
-            background: #e9ecef;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #667eea;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: background 0.3s;
-        }
-
-        input[type="range"]::-webkit-slider-thumb:hover {
-            background: #764ba2;
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #667eea;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: background 0.3s;
-        }
-
-        input[type="range"]::-moz-range-thumb:hover {
-            background: #764ba2;
         }
 
         .slider-container {
             display: flex;
             align-items: center;
             gap: min(1.5vw, 10px);
+            margin-bottom: min(1vw, 8px);
+        }
+
+        .dual-slider-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: min(1vw, 8px);
         }
 
         .slider-value {
@@ -181,45 +152,98 @@
             text-align: right;
         }
 
-        .dual-slider-container {
-            position: relative;
-            width: 100%;
+        /* jQuery UI Slider Styling from CodePen */
+        [id*="slider"].ui-slider,
+        [id*="slider"].ui-slider .ui-slider-pip .ui-slider-line {
+            background: #6b7889;
         }
 
-        .dual-slider-track {
-            position: absolute;
+        [id*="slider"].ui-slider .ui-slider-handle .ui-slider-tip:after {
+            border-left-color: #434d5a;
+        }
+
+        [id*="slider"].ui-slider .ui-slider-handle.ui-state-hover,
+        [id*="slider"].ui-slider .ui-slider-handle.ui-state-focus,
+        [id*="slider"].ui-slider .ui-slider-handle.ui-state-active {
+            border-color: white;
+        }
+
+        .ui-slider {
+            position: relative;
+            text-align: left;
             height: 8px;
-            background: #e9ecef;
+            background: #6b7889;
             border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .ui-slider .ui-slider-handle {
+            position: absolute;
+            z-index: 2;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 2px solid #fff;
+            cursor: pointer;
             top: 50%;
             transform: translateY(-50%);
-            width: 100%;
-            z-index: 1;
+            outline: none;
         }
 
-        .dual-slider-range {
+        .ui-slider .ui-slider-range {
             position: absolute;
+            z-index: 1;
             height: 8px;
             background: #667eea;
             border-radius: 4px;
             top: 50%;
             transform: translateY(-50%);
-            z-index: 2;
         }
 
-        .dual-slider-container input[type="range"] {
-            position: relative;
-            z-index: 3;
-            background: transparent;
-            pointer-events: none;
+        .ui-slider-pips .ui-slider-pip {
+            position: absolute;
+            width: 1px;
+            height: 8px;
+            line-height: 10px;
+            background: #6b7889;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
-        .dual-slider-container input[type="range"]::-webkit-slider-thumb {
-            pointer-events: all;
+        .ui-slider-pips .ui-slider-pip .ui-slider-label {
+            position: absolute;
+            top: 15px;
+            transform: translateX(-50%);
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+            color: #2c3e50;
         }
 
-        .dual-slider-container input[type="range"]::-moz-range-thumb {
-            pointer-events: all;
+        .ui-slider-float .ui-slider-handle .ui-slider-tip {
+            visibility: hidden;
+            position: absolute;
+            top: -40px;
+            transform: translateX(-50%);
+            background: #434d5a;
+            color: white;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+        }
+
+        .ui-slider-float .ui-slider-handle .ui-slider-tip:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #434d5a;
+        }
+
+        .ui-slider-float .ui-slider-handle:hover .ui-slider-tip,
+        .ui-slider-float .ui-slider-handle:focus .ui-slider-tip {
+            visibility: visible;
         }
 
         .btn {
@@ -453,7 +477,7 @@
                 padding: min(2vw, 10px);
             }
 
-            .input-group input {
+            .input-group input[type="number"], .input-group input[type="text"] {
                 font-size: clamp(0.8rem, 3.5vw, 0.95rem);
             }
 
@@ -526,17 +550,14 @@
                             <div class="input-group">
                                 <label>Investment Start Year (Offset from Now)</label>
                                 <div class="slider-container">
-                                    <input type="range" class="etf-start-year" value="0" min="0" max="10" step="1" aria-label="Investment Start Year Offset for ETF 1">
+                                    <div id="slider-start-year-1" class="slider" aria-label="Investment Start Year Offset for ETF 1"></div>
                                     <span class="slider-value">0</span>
                                 </div>
                             </div>
                             <div class="input-group">
                                 <label>Contribution Period (Offset from Now)</label>
                                 <div class="dual-slider-container">
-                                    <div class="dual-slider-track"></div>
-                                    <div class="dual-slider-range" data-type="contribution"></div>
-                                    <input type="range" class="etf-contribution-start-year" value="0" min="0" max="10" step="1" aria-label="Contribution Start Year Offset for ETF 1">
-                                    <input type="range" class="etf-contribution-end-year" value="9" min="0" max="10" step="1" aria-label="Contribution End Year Offset for ETF 1">
+                                    <div id="slider-contribution-1" class="slider" aria-label="Contribution Period Offset for ETF 1"></div>
                                     <div class="slider-value">0 - 9</div>
                                 </div>
                             </div>
@@ -547,10 +568,7 @@
                             <div class="input-group">
                                 <label>Withdrawal Period (Offset from Now)</label>
                                 <div class="dual-slider-container">
-                                    <div class="dual-slider-track"></div>
-                                    <div class="dual-slider-range" data-type="withdrawal"></div>
-                                    <input type="range" class="etf-withdrawal-start-year" value="0" min="0" max="10" step="1" aria-label="Withdrawal Start Year Offset for ETF 1">
-                                    <input type="range" class="etf-withdrawal-end-year" value="9" min="0" max="10" step="1" aria-label="Withdrawal End Year Offset for ETF 1">
+                                    <div id="slider-withdrawal-1" class="slider" aria-label="Withdrawal Period Offset for ETF 1"></div>
                                     <div class="slider-value">0 - 9</div>
                                 </div>
                             </div>
@@ -589,96 +607,103 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-slider-pips/1.11.4/jquery-ui-slider-pips.min.js"></script>
     <script>
         let etfCount = 1;
-        let compoundingFrequency = 'yearly'; // Default to yearly compounding
+        let compoundingFrequency = 'yearly';
         let breakdownType = 'yearly';
 
-        // Update slider max values based on time period
         function updateSliderMax() {
             const timePeriod = parseInt(document.getElementById('time-period').value) || 10;
-            const maxYear = Math.max(1, Math.min(timePeriod - 1, 50)); // Ensure max is between 1 and 50
-            document.querySelectorAll('.etf-start-year, .etf-contribution-start-year, .etf-contribution-end-year, .etf-withdrawal-start-year, .etf-withdrawal-end-year').forEach(slider => {
-                slider.max = maxYear;
-                const currentValue = parseInt(slider.value);
-                if (currentValue > maxYear) {
-                    slider.value = maxYear;
-                    updateSliderValue(slider);
+            const maxYear = Math.max(1, Math.min(timePeriod - 1, 50));
+            $('.slider').each(function() {
+                const $slider = $(this);
+                const isDual = $slider.hasClass('dual-slider');
+                $slider.slider('option', 'max', maxYear);
+                if (isDual) {
+                    const values = $slider.slider('values');
+                    if (values[0] > maxYear) $slider.slider('values', 0, maxYear);
+                    if (values[1] > maxYear) $slider.slider('values', 1, maxYear);
+                    updateDualSlider($slider);
+                } else {
+                    const value = $slider.slider('value');
+                    if (value > maxYear) $slider.slider('value', maxYear);
+                    updateSliderValue($slider);
                 }
             });
         }
 
-        // Update single slider value display
-        function updateSliderValue(slider) {
-            const valueSpan = slider.nextElementSibling;
-            if (valueSpan && valueSpan.classList.contains('slider-value')) {
-                valueSpan.textContent = slider.value;
+        function updateSliderValue($slider) {
+            const valueSpan = $slider.parent().find('.slider-value');
+            if (valueSpan.length) {
+                valueSpan.text($slider.slider('value'));
             }
         }
 
-        // Update dual slider value display and range
-        function updateDualSlider(container) {
-            const startSlider = container.querySelector('.etf-contribution-start-year, .etf-withdrawal-start-year');
-            const endSlider = container.querySelector('.etf-contribution-end-year, .etf-withdrawal-end-year');
-            const range = container.querySelector('.dual-slider-range');
-            const valueSpan = container.querySelector('.slider-value');
-            
-            let startValue = parseInt(startSlider.value);
-            let endValue = parseInt(endSlider.value);
-
-            // Ensure start is not greater than end
-            if (startValue > endValue) {
-                [startValue, endValue] = [endValue, startValue];
-                startSlider.value = startValue;
-                endSlider.value = endValue;
+        function updateDualSlider($slider) {
+            const valueSpan = $slider.parent().find('.slider-value');
+            let values = $slider.slider('values');
+            if (values[0] > values[1]) {
+                values = [values[1], values[0]];
+                $slider.slider('values', values);
             }
-
-            // Update range visual
-            const min = parseInt(startSlider.min);
-            const max = parseInt(startSlider.max);
-            const rangeWidth = ((endValue - startValue) / (max - min)) * 100;
-            const rangeStart = ((startValue - min) / (max - min)) * 100;
-            range.style.left = `${rangeStart}%`;
-            range.style.width = `${rangeWidth}%`;
-
-            // Update value display
-            valueSpan.textContent = `${startValue} - ${endValue}`;
+            if (valueSpan.length) {
+                valueSpan.text(`${values[0]} - ${values[1]}`);
+            }
         }
 
-        // Initialize sliders
         function initializeSliders() {
-            // Single sliders
-            document.querySelectorAll('input[type="range"].etf-start-year').forEach(slider => {
-                slider.addEventListener('input', function() {
-                    updateSliderValue(this);
-                    calculateCompounding();
+            const timePeriod = parseInt(document.getElementById('time-period').value) || 10;
+            const maxYear = Math.max(1, Math.min(timePeriod - 1, 50));
+
+            $('.slider:not(.dual-slider)').each(function() {
+                const $slider = $(this);
+                $slider.slider({
+                    min: 0,
+                    max: maxYear,
+                    value: parseInt($slider.parent().find('input[type="range"]').val()) || 0,
+                    animate: 300,
+                    create: function() {
+                        $slider.slider('pips', { first: 'pip', last: 'pip' }).slider('float');
+                    },
+                    slide: function(event, ui) {
+                        updateSliderValue($slider);
+                        calculateCompounding();
+                    }
                 });
-                updateSliderValue(slider);
+                updateSliderValue($slider);
             });
 
-            // Dual sliders
-            document.querySelectorAll('.dual-slider-container').forEach(container => {
-                const startSlider = container.querySelector('.etf-contribution-start-year, .etf-withdrawal-start-year');
-                const endSlider = container.querySelector('.etf-contribution-end-year, .etf-withdrawal-end-year');
-                
-                [startSlider, endSlider].forEach(slider => {
-                    slider.addEventListener('input', function() {
-                        updateDualSlider(container);
+            $('.slider.dual-slider').each(function() {
+                const $slider = $(this);
+                const $container = $slider.parent();
+                const startVal = parseInt($container.find('.etf-contribution-start-year, .etf-withdrawal-start-year').val()) || 0;
+                const endVal = parseInt($container.find('.etf-contribution-end-year, .etf-withdrawal-end-year').val()) || maxYear;
+                $slider.slider({
+                    min: 0,
+                    max: maxYear,
+                    range: true,
+                    values: [startVal, endVal],
+                    animate: 300,
+                    create: function() {
+                        $slider.slider('pips', { first: 'pip', last: 'pip' }).slider('float');
+                    },
+                    slide: function(event, ui) {
+                        updateDualSlider($slider);
                         calculateCompounding();
-                    });
+                    }
                 });
-                updateDualSlider(container);
+                updateDualSlider($slider);
             });
         }
 
-        // Update sliders when time period changes
         document.getElementById('time-period').addEventListener('input', function() {
             updateSliderMax();
-            document.querySelectorAll('.dual-slider-container').forEach(updateDualSlider);
             calculateCompounding();
         });
 
-        // Toggle compounding frequency
         document.querySelectorAll('.toggle-btn[data-frequency]').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.toggle-btn[data-frequency]').forEach(b => {
@@ -692,7 +717,6 @@
             });
         });
 
-        // Toggle breakdown type
         document.querySelectorAll('.toggle-btn[data-breakdown]').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.toggle-btn[data-breakdown]').forEach(b => {
@@ -706,7 +730,6 @@
             });
         });
 
-        // Add ETF
         function addETF() {
             const timePeriod = parseInt(document.getElementById('time-period').value) || 10;
             const maxYear = Math.max(1, Math.min(timePeriod - 1, 50));
@@ -730,17 +753,14 @@
                 <div class="input-group">
                     <label>Investment Start Year (Offset from Now)</label>
                     <div class="slider-container">
-                        <input type="range" class="etf-start-year" value="0" min="0" max="${maxYear}" step="1" aria-label="Investment Start Year Offset for ETF ${etfCount}">
+                        <div id="slider-start-year-${etfCount}" class="slider" aria-label="Investment Start Year Offset for ETF ${etfCount}"></div>
                         <span class="slider-value">0</span>
                     </div>
                 </div>
                 <div class="input-group">
                     <label>Contribution Period (Offset from Now)</label>
                     <div class="dual-slider-container">
-                        <div class="dual-slider-track"></div>
-                        <div class="dual-slider-range" data-type="contribution"></div>
-                        <input type="range" class="etf-contribution-start-year" value="0" min="0" max="${maxYear}" step="1" aria-label="Contribution Start Year Offset for ETF ${etfCount}">
-                        <input type="range" class="etf-contribution-end-year" value="${maxYear}" min="0" max="${maxYear}" step="1" aria-label="Contribution End Year Offset for ETF ${etfCount}">
+                        <div id="slider-contribution-${etfCount}" class="slider dual-slider" aria-label="Contribution Period Offset for ETF ${etfCount}"></div>
                         <div class="slider-value">0 - ${maxYear}</div>
                     </div>
                 </div>
@@ -751,10 +771,7 @@
                 <div class="input-group">
                     <label>Withdrawal Period (Offset from Now)</label>
                     <div class="dual-slider-container">
-                        <div class="dual-slider-track"></div>
-                        <div class="dual-slider-range" data-type="withdrawal"></div>
-                        <input type="range" class="etf-withdrawal-start-year" value="0" min="0" max="${maxYear}" step="1" aria-label="Withdrawal Start Year Offset for ETF ${etfCount}">
-                        <input type="range" class="etf-withdrawal-end-year" value="${maxYear}" min="0" max="${maxYear}" step="1" aria-label="Withdrawal End Year Offset for ETF ${etfCount}">
+                        <div id="slider-withdrawal-${etfCount}" class="slider dual-slider" aria-label="Withdrawal Period Offset for ETF ${etfCount}"></div>
                         <div class="slider-value">0 - ${maxYear}</div>
                     </div>
                 </div>
@@ -772,29 +789,41 @@
                 </div>
             `;
             container.appendChild(newETF);
-            // Initialize sliders for the new ETF
-            newETF.querySelectorAll('input[type="range"].etf-start-year').forEach(slider => {
-                slider.addEventListener('input', function() {
-                    updateSliderValue(this);
+
+            $(`#slider-start-year-${etfCount}`).slider({
+                min: 0,
+                max: maxYear,
+                value: 0,
+                animate: 300,
+                create: function() {
+                    $(this).slider('pips', { first: 'pip', last: 'pip' }).slider('float');
+                },
+                slide: function(event, ui) {
+                    updateSliderValue($(this));
                     calculateCompounding();
-                });
-                updateSliderValue(slider);
+                }
             });
-            newETF.querySelectorAll('.dual-slider-container').forEach(container => {
-                const startSlider = container.querySelector('.etf-contribution-start-year, .etf-withdrawal-start-year');
-                const endSlider = container.querySelector('.etf-contribution-end-year, .etf-withdrawal-end-year');
-                [startSlider, endSlider].forEach(slider => {
-                    slider.addEventListener('input', function() {
-                        updateDualSlider(container);
+            updateSliderValue($(`#slider-start-year-${etfCount}`));
+
+            $(`#slider-contribution-${etfCount}, #slider-withdrawal-${etfCount}`).each(function() {
+                const $slider = $(this);
+                $slider.slider({
+                    min: 0,
+                    max: maxYear,
+                    range: true,
+                    values: [0, maxYear],
+                    animate: 300,
+                    create: function() {
+                        $slider.slider('pips', { first: 'pip', last: 'pip' }).slider('float');
+                    },
+                    slide: function(event, ui) {
+                        updateDualSlider($slider);
                         calculateCompounding();
-                    });
+                    }
                 });
-                updateDualSlider(container);
+                updateDualSlider($slider);
             });
-            // Add event listener for new ETF name input
-            newETF.querySelector('.etf-name').addEventListener('input', function() {
-                calculateCompounding();
-            });
+            newETF.querySelector('.etf-name').addEventListener('input', calculateCompounding);
         }
 
         function removeETF(button) {
@@ -816,17 +845,21 @@
             let maxFinalAmount = 0;
 
             etfSections.forEach((section, index) => {
-                const name_input = section.querySelector('.etf-name').value.trim();
-                if (!name_input) return; // skip this ETF if name is empty
-                const name = name_input;
+                const nameInput = section.querySelector('.etf-name').value.trim();
+                if (!nameInput) return;
+                const name = nameInput;
 
                 const initialInvestment = parseFloat(section.querySelector('.etf-initial-investment').value) || 0;
-                const startYear = parseInt(section.querySelector('.etf-start-year').value) || 0;
-                const contributionStartYear = parseInt(section.querySelector('.etf-contribution-start-year').value) || 0;
-                const contributionEndYear = parseInt(section.querySelector('.etf-contribution-end-year').value) || years - 1;
+                const startYear = $(section.querySelector('.slider:not(.dual-slider)')).slider('value') || 0;
+                const contributionSlider = $(section.querySelector('.dual-slider[id*="contribution"]'));
+                const contributionValues = contributionSlider.slider('values');
+                const contributionStartYear = contributionValues[0] || 0;
+                const contributionEndYear = contributionValues[1] || years - 1;
                 const annualContribution = parseFloat(section.querySelector('.etf-annual-contribution').value) || 0;
-                const withdrawalStartYear = parseInt(section.querySelector('.etf-withdrawal-start-year').value) || 0;
-                const withdrawalEndYear = parseInt(section.querySelector('.etf-withdrawal-end-year').value) || years - 1;
+                const withdrawalSlider = $(section.querySelector('.dual-slider[id*="withdrawal"]'));
+                const withdrawalValues = withdrawalSlider.slider('values');
+                const withdrawalStartYear = withdrawalValues[0] || 0;
+                const withdrawalEndYear = withdrawalValues[1] || years - 1;
                 const annualWithdrawal = parseFloat(section.querySelector('.etf-annual-withdrawal').value) || 0;
                 const annualReturn = parseFloat(section.querySelector('.annual-return').value) || 0;
                 const expenseRatio = parseFloat(section.querySelector('.expense-ratio').value) || 0;
@@ -963,7 +996,7 @@
 
             if (breakdownType === 'monthly' && frequency === 'yearly' || breakdownType === 'yearly' && frequency === 'yearly') {
                 const yearlyRate = rate;
-                const monthlyRate = yearlyRate / 12; // Approximate monthly rate for display
+                const monthlyRate = yearlyRate / 12;
                 for (let year = 1; year <= totalYears; year++) {
                     const startOfYearAmount = amount;
                     let contribThisYear = 0;
@@ -1254,7 +1287,6 @@
             document.getElementById('results-content').innerHTML = html;
         }
 
-        // Input sanitization for number inputs and ETF name
         function initializeInputs() {
             document.querySelectorAll('input[type="number"]').forEach(input => {
                 input.addEventListener('input', function() {
@@ -1263,20 +1295,16 @@
                     }
                     if (this.id === 'time-period') {
                         updateSliderMax();
-                        document.querySelectorAll('.dual-slider-container').forEach(updateDualSlider);
                     }
                     calculateCompounding();
                 });
             });
 
             document.querySelectorAll('.etf-name').forEach(input => {
-                input.addEventListener('input', function() {
-                    calculateCompounding();
-                });
+                input.addEventListener('input', calculateCompounding);
             });
         }
 
-        // Initialize with default calculation only if ETF name is not empty
         window.addEventListener('load', function() {
             updateSliderMax();
             initializeSliders();
