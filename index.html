@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETF Compound Interest Calculator</title>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-slider-pips/1.11.4/jquery-ui-slider-pips.min.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,600" rel="stylesheet">
     <style>
         * {
@@ -136,6 +134,7 @@
             align-items: center;
             gap: min(1.5vw, 10px);
             margin-bottom: min(1vw, 8px);
+            position: relative;
         }
 
         .dual-slider-container {
@@ -152,98 +151,185 @@
             text-align: right;
         }
 
-        /* jQuery UI Slider Styling from CodePen */
-        [id*="slider"].ui-slider,
-        [id*="slider"].ui-slider .ui-slider-pip .ui-slider-line {
-            background: #6b7889;
-        }
-
-        [id*="slider"].ui-slider .ui-slider-handle .ui-slider-tip:after {
-            border-left-color: #434d5a;
-        }
-
-        [id*="slider"].ui-slider .ui-slider-handle.ui-state-hover,
-        [id*="slider"].ui-slider .ui-slider-handle.ui-state-focus,
-        [id*="slider"].ui-slider .ui-slider-handle.ui-state-active {
-            border-color: white;
-        }
-
-        .ui-slider {
-            position: relative;
-            text-align: left;
+        /* HTML5 Range Slider Styling (Inspired by CodePen) */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
             height: 8px;
             background: #6b7889;
             border-radius: 4px;
-            margin: 10px 0;
+            cursor: pointer;
+            outline: none;
+            position: relative;
+            z-index: 3;
         }
 
-        .ui-slider .ui-slider-handle {
-            position: absolute;
-            z-index: 2;
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
             width: 20px;
             height: 20px;
+            background: #667eea;
             border-radius: 50%;
-            background: #667eea;
             border: 2px solid #fff;
-            cursor: pointer;
-            top: 50%;
-            transform: translateY(-50%);
-            outline: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s;
+            z-index: 4;
         }
 
-        .ui-slider .ui-slider-range {
-            position: absolute;
-            z-index: 1;
-            height: 8px;
+        input[type="range"]::-webkit-slider-thumb:hover,
+        input[type="range"]:focus::-webkit-slider-thumb {
+            background: #fff;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
             background: #667eea;
-            border-radius: 4px;
-            top: 50%;
-            transform: translateY(-50%);
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s;
         }
 
-        .ui-slider-pips .ui-slider-pip {
-            position: absolute;
-            width: 1px;
-            height: 8px;
-            line-height: 10px;
-            background: #6b7889;
-            top: 50%;
-            transform: translateY(-50%);
+        input[type="range"]::-moz-range-thumb:hover,
+        input[type="range"]:focus::-moz-range-thumb {
+            background: #fff;
         }
 
-        .ui-slider-pips .ui-slider-pip .ui-slider-label {
-            position: absolute;
-            top: 15px;
-            transform: translateX(-50%);
-            font-size: clamp(0.7rem, 2vw, 0.8rem);
-            color: #2c3e50;
-        }
-
-        .ui-slider-float .ui-slider-handle .ui-slider-tip {
-            visibility: hidden;
+        /* Tooltip for range inputs */
+        input[type="range"]::before {
+            content: attr(data-value);
             position: absolute;
             top: -40px;
-            transform: translateX(-50%);
             background: #434d5a;
             color: white;
             padding: 5px 8px;
             border-radius: 4px;
             font-size: clamp(0.7rem, 2vw, 0.8rem);
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.2s;
+            z-index: 5;
         }
 
-        .ui-slider-float .ui-slider-handle .ui-slider-tip:after {
+        input[type="range"]:hover::before,
+        input[type="range"]:focus::before {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Position tooltip based on thumb position */
+        input[type="range"].etf-start-year::before {
+            left: calc((var(--value) - var(--min)) / (var(--max) - var(--min)) * (100% - 20px) + 10px);
+        }
+
+        input[type="range"].etf-contribution-start-year::before,
+        input[type="range"].etf-withdrawal-start-year::before {
+            left: calc((var(--value) - var(--min)) / (var(--max) - var(--min)) * (100% - 20px));
+        }
+
+        input[type="range"].etf-contribution-end-year::before,
+        input[type="range"].etf-withdrawal-end-year::before {
+            left: calc((var(--value) - var(--min)) / (var(--max) - var(--min)) * (100% - 20px) + 20px);
+        }
+
+        input[type="range"]::after {
             content: '';
             position: absolute;
-            bottom: -5px;
-            left: 50%;
+            top: -25px;
+            left: calc((var(--value) - var(--min)) / (var(--max) - var(--min)) * (100% - 20px) + 10px);
             transform: translateX(-50%);
             border: 5px solid transparent;
             border-top-color: #434d5a;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.2s;
         }
 
-        .ui-slider-float .ui-slider-handle:hover .ui-slider-tip,
-        .ui-slider-float .ui-slider-handle:focus .ui-slider-tip {
+        input[type="range"]:hover::after,
+        input[type="range"]:focus::after {
             visibility: visible;
+            opacity: 1;
+        }
+
+        /* Pips for range inputs */
+        .slider-container::before,
+        .dual-slider-container::before,
+        .dual-slider-container::after {
+            content: '';
+            position: absolute;
+            width: 1px;
+            height: 8px;
+            background: #6b7889;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .slider-container::before,
+        .dual-slider-container::before {
+            left: 0;
+        }
+
+        .dual-slider-container::after {
+            right: 0;
+        }
+
+        .slider-container::after,
+        .dual-slider-container .pip-label-first::after,
+        .dual-slider-container .pip-label-last::after {
+            content: attr(data-min);
+            position: absolute;
+            top: 15px;
+            left: 0;
+            transform: translateX(-50%);
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+            color: #2c3e50;
+        }
+
+        .dual-slider-container .pip-label-last::after {
+            content: attr(data-max);
+            left: auto;
+            right: 0;
+            transform: translateX(50%);
+        }
+
+        .dual-slider-track {
+            position: absolute;
+            height: 8px;
+            background: #6b7889;
+            border-radius: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            z-index: 1;
+        }
+
+        .dual-slider-range {
+            position: absolute;
+            height: 8px;
+            background: #667eea;
+            border-radius: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+        }
+
+        .dual-slider-container input[type="range"] {
+            position: relative;
+            background: transparent;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .dual-slider-container input[type="range"]::-webkit-slider-thumb {
+            pointer-events: all;
+        }
+
+        .dual-slider-container input[type="range"]::-moz-range-thumb {
+            pointer-events: all;
         }
 
         .btn {
@@ -549,16 +635,21 @@
                             </div>
                             <div class="input-group">
                                 <label>Investment Start Year (Offset from Now)</label>
-                                <div class="slider-container">
-                                    <div id="slider-start-year-1" class="slider" aria-label="Investment Start Year Offset for ETF 1"></div>
+                                <div class="slider-container" data-min="0" data-max="9">
+                                    <input type="range" class="etf-start-year" value="0" min="0" max="9" step="1" aria-label="Investment Start Year Offset for ETF 1">
                                     <span class="slider-value">0</span>
                                 </div>
                             </div>
                             <div class="input-group">
                                 <label>Contribution Period (Offset from Now)</label>
-                                <div class="dual-slider-container">
-                                    <div id="slider-contribution-1" class="slider" aria-label="Contribution Period Offset for ETF 1"></div>
+                                <div class="dual-slider-container" data-min="0" data-max="9">
+                                    <div class="dual-slider-track"></div>
+                                    <div class="dual-slider-range" data-type="contribution"></div>
+                                    <input type="range" class="etf-contribution-start-year" value="0" min="0" max="9" step="1" aria-label="Contribution Start Year Offset for ETF 1">
+                                    <input type="range" class="etf-contribution-end-year" value="9" min="0" max="9" step="1" aria-label="Contribution End Year Offset for ETF 1">
                                     <div class="slider-value">0 - 9</div>
+                                    <div class="pip-label-first" data-min="0"></div>
+                                    <div class="pip-label-last" data-max="9"></div>
                                 </div>
                             </div>
                             <div class="input-group">
@@ -567,9 +658,14 @@
                             </div>
                             <div class="input-group">
                                 <label>Withdrawal Period (Offset from Now)</label>
-                                <div class="dual-slider-container">
-                                    <div id="slider-withdrawal-1" class="slider" aria-label="Withdrawal Period Offset for ETF 1"></div>
+                                <div class="dual-slider-container" data-min="0" data-max="9">
+                                    <div class="dual-slider-track"></div>
+                                    <div class="dual-slider-range" data-type="withdrawal"></div>
+                                    <input type="range" class="etf-withdrawal-start-year" value="0" min="0" max="9" step="1" aria-label="Withdrawal Start Year Offset for ETF 1">
+                                    <input type="range" class="etf-withdrawal-end-year" value="9" min="0" max="9" step="1" aria-label="Withdrawal End Year Offset for ETF 1">
                                     <div class="slider-value">0 - 9</div>
+                                    <div class="pip-label-first" data-min="0"></div>
+                                    <div class="pip-label-last" data-max="9"></div>
                                 </div>
                             </div>
                             <div class="input-group">
@@ -607,9 +703,6 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-slider-pips/1.11.4/jquery-ui-slider-pips.min.js"></script>
     <script>
         let etfCount = 1;
         let compoundingFrequency = 'yearly';
@@ -618,84 +711,93 @@
         function updateSliderMax() {
             const timePeriod = parseInt(document.getElementById('time-period').value) || 10;
             const maxYear = Math.max(1, Math.min(timePeriod - 1, 50));
-            $('.slider').each(function() {
-                const $slider = $(this);
-                const isDual = $slider.hasClass('dual-slider');
-                $slider.slider('option', 'max', maxYear);
-                if (isDual) {
-                    const values = $slider.slider('values');
-                    if (values[0] > maxYear) $slider.slider('values', 0, maxYear);
-                    if (values[1] > maxYear) $slider.slider('values', 1, maxYear);
-                    updateDualSlider($slider);
+            document.querySelectorAll('.etf-start-year, .etf-contribution-start-year, .etf-contribution-end-year, .etf-withdrawal-start-year, .etf-withdrawal-end-year').forEach(slider => {
+                slider.max = maxYear;
+                const currentValue = parseInt(slider.value);
+                if (currentValue > maxYear) {
+                    slider.value = maxYear;
+                    updateSliderValue(slider);
+                }
+                slider.style.setProperty('--max', maxYear);
+                slider.style.setProperty('--value', slider.value);
+                const container = slider.closest('.slider-container, .dual-slider-container');
+                if (container.classList.contains('dual-slider-container')) {
+                    container.dataset.max = maxYear;
+                    container.querySelector('.pip-label-last').dataset.max = maxYear;
                 } else {
-                    const value = $slider.slider('value');
-                    if (value > maxYear) $slider.slider('value', maxYear);
-                    updateSliderValue($slider);
+                    container.dataset.max = maxYear;
                 }
             });
+            document.querySelectorAll('.dual-slider-container').forEach(updateDualSlider);
         }
 
-        function updateSliderValue($slider) {
-            const valueSpan = $slider.parent().find('.slider-value');
-            if (valueSpan.length) {
-                valueSpan.text($slider.slider('value'));
+        function updateSliderValue(slider) {
+            const valueSpan = slider.nextElementSibling;
+            if (valueSpan && valueSpan.classList.contains('slider-value')) {
+                valueSpan.textContent = slider.value;
             }
+            slider.style.setProperty('--value', slider.value);
+            slider.dataset.value = slider.value;
         }
 
-        function updateDualSlider($slider) {
-            const valueSpan = $slider.parent().find('.slider-value');
-            let values = $slider.slider('values');
-            if (values[0] > values[1]) {
-                values = [values[1], values[0]];
-                $slider.slider('values', values);
+        function updateDualSlider(container) {
+            const startSlider = container.querySelector('.etf-contribution-start-year, .etf-withdrawal-start-year');
+            const endSlider = container.querySelector('.etf-contribution-end-year, .etf-withdrawal-end-year');
+            const range = container.querySelector('.dual-slider-range');
+            const valueSpan = container.querySelector('.slider-value');
+            
+            let startValue = parseInt(startSlider.value);
+            let endValue = parseInt(endSlider.value);
+
+            if (startValue > endValue) {
+                [startValue, endValue] = [endValue, startValue];
+                startSlider.value = startValue;
+                endSlider.value = endValue;
             }
-            if (valueSpan.length) {
-                valueSpan.text(`${values[0]} - ${values[1]}`);
-            }
+
+            startSlider.style.setProperty('--value', startValue);
+            endSlider.style.setProperty('--value', endValue);
+            startSlider.dataset.value = startValue;
+            endSlider.dataset.value = endValue;
+
+            const min = parseInt(startSlider.min);
+            const max = parseInt(startSlider.max);
+            const rangeWidth = ((endValue - startValue) / (max - min)) * 100;
+            const rangeStart = ((startValue - min) / (max - min)) * 100;
+            range.style.left = `${rangeStart}%`;
+            range.style.width = `${rangeWidth}%`;
+
+            valueSpan.textContent = `${startValue} - ${endValue}`;
         }
 
         function initializeSliders() {
-            const timePeriod = parseInt(document.getElementById('time-period').value) || 10;
-            const maxYear = Math.max(1, Math.min(timePeriod - 1, 50));
-
-            $('.slider:not(.dual-slider)').each(function() {
-                const $slider = $(this);
-                $slider.slider({
-                    min: 0,
-                    max: maxYear,
-                    value: parseInt($slider.parent().find('input[type="range"]').val()) || 0,
-                    animate: 300,
-                    create: function() {
-                        $slider.slider('pips', { first: 'pip', last: 'pip' }).slider('float');
-                    },
-                    slide: function(event, ui) {
-                        updateSliderValue($slider);
-                        calculateCompounding();
-                    }
+            document.querySelectorAll('input[type="range"].etf-start-year').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    updateSliderValue(this);
+                    calculateCompounding();
                 });
-                updateSliderValue($slider);
+                slider.style.setProperty('--min', slider.min);
+                slider.style.setProperty('--max', slider.max);
+                slider.style.setProperty('--value', slider.value);
+                slider.dataset.value = slider.value;
+                updateSliderValue(slider);
             });
 
-            $('.slider.dual-slider').each(function() {
-                const $slider = $(this);
-                const $container = $slider.parent();
-                const startVal = parseInt($container.find('.etf-contribution-start-year, .etf-withdrawal-start-year').val()) || 0;
-                const endVal = parseInt($container.find('.etf-contribution-end-year, .etf-withdrawal-end-year').val()) || maxYear;
-                $slider.slider({
-                    min: 0,
-                    max: maxYear,
-                    range: true,
-                    values: [startVal, endVal],
-                    animate: 300,
-                    create: function() {
-                        $slider.slider('pips', { first: 'pip', last: 'pip' }).slider('float');
-                    },
-                    slide: function(event, ui) {
-                        updateDualSlider($slider);
+            document.querySelectorAll('.dual-slider-container').forEach(container => {
+                const startSlider = container.querySelector('.etf-contribution-start-year, .etf-withdrawal-start-year');
+                const endSlider = container.querySelector('.etf-contribution-end-year, .etf-withdrawal-end-year');
+                
+                [startSlider, endSlider].forEach(slider => {
+                    slider.addEventListener('input', function() {
+                        updateDualSlider(container);
                         calculateCompounding();
-                    }
+                    });
+                    slider.style.setProperty('--min', slider.min);
+                    slider.style.setProperty('--max', slider.max);
+                    slider.style.setProperty('--value', slider.value);
+                    slider.dataset.value = slider.value;
                 });
-                updateDualSlider($slider);
+                updateDualSlider(container);
             });
         }
 
@@ -752,16 +854,21 @@
                 </div>
                 <div class="input-group">
                     <label>Investment Start Year (Offset from Now)</label>
-                    <div class="slider-container">
-                        <div id="slider-start-year-${etfCount}" class="slider" aria-label="Investment Start Year Offset for ETF ${etfCount}"></div>
+                    <div class="slider-container" data-min="0" data-max="${maxYear}">
+                        <input type="range" class="etf-start-year" value="0" min="0" max="${maxYear}" step="1" aria-label="Investment Start Year Offset for ETF ${etfCount}">
                         <span class="slider-value">0</span>
                     </div>
                 </div>
                 <div class="input-group">
                     <label>Contribution Period (Offset from Now)</label>
-                    <div class="dual-slider-container">
-                        <div id="slider-contribution-${etfCount}" class="slider dual-slider" aria-label="Contribution Period Offset for ETF ${etfCount}"></div>
+                    <div class="dual-slider-container" data-min="0" data-max="${maxYear}">
+                        <div class="dual-slider-track"></div>
+                        <div class="dual-slider-range" data-type="contribution"></div>
+                        <input type="range" class="etf-contribution-start-year" value="0" min="0" max="${maxYear}" step="1" aria-label="Contribution Start Year Offset for ETF ${etfCount}">
+                        <input type="range" class="etf-contribution-end-year" value="${maxYear}" min="0" max="${maxYear}" step="1" aria-label="Contribution End Year Offset for ETF ${etfCount}">
                         <div class="slider-value">0 - ${maxYear}</div>
+                        <div class="pip-label-first" data-min="0"></div>
+                        <div class="pip-label-last" data-max="${maxYear}"></div>
                     </div>
                 </div>
                 <div class="input-group">
@@ -770,9 +877,14 @@
                 </div>
                 <div class="input-group">
                     <label>Withdrawal Period (Offset from Now)</label>
-                    <div class="dual-slider-container">
-                        <div id="slider-withdrawal-${etfCount}" class="slider dual-slider" aria-label="Withdrawal Period Offset for ETF ${etfCount}"></div>
+                    <div class="dual-slider-container" data-min="0" data-max="${maxYear}">
+                        <div class="dual-slider-track"></div>
+                        <div class="dual-slider-range" data-type="withdrawal"></div>
+                        <input type="range" class="etf-withdrawal-start-year" value="0" min="0" max="${maxYear}" step="1" aria-label="Withdrawal Start Year Offset for ETF ${etfCount}">
+                        <input type="range" class="etf-withdrawal-end-year" value="${maxYear}" min="0" max="${maxYear}" step="1" aria-label="Withdrawal End Year Offset for ETF ${etfCount}">
                         <div class="slider-value">0 - ${maxYear}</div>
+                        <div class="pip-label-first" data-min="0"></div>
+                        <div class="pip-label-last" data-max="${maxYear}"></div>
                     </div>
                 </div>
                 <div class="input-group">
@@ -789,39 +901,31 @@
                 </div>
             `;
             container.appendChild(newETF);
-
-            $(`#slider-start-year-${etfCount}`).slider({
-                min: 0,
-                max: maxYear,
-                value: 0,
-                animate: 300,
-                create: function() {
-                    $(this).slider('pips', { first: 'pip', last: 'pip' }).slider('float');
-                },
-                slide: function(event, ui) {
-                    updateSliderValue($(this));
+            newETF.querySelectorAll('input[type="range"].etf-start-year').forEach(slider => {
+                slider.addEventListener('input', function() {
+                    updateSliderValue(this);
                     calculateCompounding();
-                }
-            });
-            updateSliderValue($(`#slider-start-year-${etfCount}`));
-
-            $(`#slider-contribution-${etfCount}, #slider-withdrawal-${etfCount}`).each(function() {
-                const $slider = $(this);
-                $slider.slider({
-                    min: 0,
-                    max: maxYear,
-                    range: true,
-                    values: [0, maxYear],
-                    animate: 300,
-                    create: function() {
-                        $slider.slider('pips', { first: 'pip', last: 'pip' }).slider('float');
-                    },
-                    slide: function(event, ui) {
-                        updateDualSlider($slider);
-                        calculateCompounding();
-                    }
                 });
-                updateDualSlider($slider);
+                slider.style.setProperty('--min', slider.min);
+                slider.style.setProperty('--max', slider.max);
+                slider.style.setProperty('--value', slider.value);
+                slider.dataset.value = slider.value;
+                updateSliderValue(slider);
+            });
+            newETF.querySelectorAll('.dual-slider-container').forEach(container => {
+                const startSlider = container.querySelector('.etf-contribution-start-year, .etf-withdrawal-start-year');
+                const endSlider = container.querySelector('.etf-contribution-end-year, .etf-withdrawal-end-year');
+                [startSlider, endSlider].forEach(slider => {
+                    slider.addEventListener('input', function() {
+                        updateDualSlider(container);
+                        calculateCompounding();
+                    });
+                    slider.style.setProperty('--min', slider.min);
+                    slider.style.setProperty('--max', slider.max);
+                    slider.style.setProperty('--value', slider.value);
+                    slider.dataset.value = slider.value;
+                });
+                updateDualSlider(container);
             });
             newETF.querySelector('.etf-name').addEventListener('input', calculateCompounding);
         }
@@ -850,16 +954,12 @@
                 const name = nameInput;
 
                 const initialInvestment = parseFloat(section.querySelector('.etf-initial-investment').value) || 0;
-                const startYear = $(section.querySelector('.slider:not(.dual-slider)')).slider('value') || 0;
-                const contributionSlider = $(section.querySelector('.dual-slider[id*="contribution"]'));
-                const contributionValues = contributionSlider.slider('values');
-                const contributionStartYear = contributionValues[0] || 0;
-                const contributionEndYear = contributionValues[1] || years - 1;
+                const startYear = parseInt(section.querySelector('.etf-start-year').value) || 0;
+                const contributionStartYear = parseInt(section.querySelector('.etf-contribution-start-year').value) || 0;
+                const contributionEndYear = parseInt(section.querySelector('.etf-contribution-end-year').value) || years - 1;
                 const annualContribution = parseFloat(section.querySelector('.etf-annual-contribution').value) || 0;
-                const withdrawalSlider = $(section.querySelector('.dual-slider[id*="withdrawal"]'));
-                const withdrawalValues = withdrawalSlider.slider('values');
-                const withdrawalStartYear = withdrawalValues[0] || 0;
-                const withdrawalEndYear = withdrawalValues[1] || years - 1;
+                const withdrawalStartYear = parseInt(section.querySelector('.etf-withdrawal-start-year').value) || 0;
+                const withdrawalEndYear = parseInt(section.querySelector('.etf-withdrawal-end-year').value) || years - 1;
                 const annualWithdrawal = parseFloat(section.querySelector('.etf-annual-withdrawal').value) || 0;
                 const annualReturn = parseFloat(section.querySelector('.annual-return').value) || 0;
                 const expenseRatio = parseFloat(section.querySelector('.expense-ratio').value) || 0;
