@@ -1287,7 +1287,7 @@
                             <tr>
                                 <th>${breakdownType === 'yearly' ? 'Year' : 'Year/Month'}</th>
                                 ${results.map(result => `<th>${result.name}</th>`).join('')}
-                                ${results.length > 1 ? '<th>Total</th>' : ''}
+                                ${results.length > 1 ? '<th>Total</th><th>Total Gain</th>' : ''}
                             </tr>
                         </thead>
                         <tbody>
@@ -1298,6 +1298,7 @@
             if (breakdownType === 'yearly') {
                 for (let year = 1; year <= years; year++) {
                     let totalYearlyAmount = 0;
+                    let totalYearlyGain = 0;
                     html += `
                         <tr>
                             <td>
@@ -1308,18 +1309,20 @@
                                             <tr>
                                                 <th>Month</th>
                                                 ${results.map(result => `<th>${result.name}</th>`).join('')}
-                                                ${results.length > 1 ? '<th>Total</th>' : ''}
+                                                ${results.length > 1 ? '<th>Total</th><th>Total Gain</th>' : ''}
                                             </tr>
                                         </thead>
                                         <tbody>
                     `;
                     for (let month = 1; month <= 12; month++) {
                         let totalMonthlyAmount = 0;
+                        let totalMonthlyGain = 0;
                         html += `<tr><td>Month ${month}</td>`;
                         results.forEach(result => {
                             const monthData = result.breakdownData.find(d => d.type === 'month' && d.year === year && d.month === month);
                             if (monthData && monthData.amount > 0) {
                                 totalMonthlyAmount += monthData.amount;
+                                totalMonthlyGain += monthData.interest;
                                 html += `
                                     <td>
                                         <span class="amount">$${format(monthData.amount)}</span>
@@ -1332,6 +1335,7 @@
                         });
                         if (results.length > 1) {
                             html += `<td>${totalMonthlyAmount > 0 ? `<span class="amount">$${format(totalMonthlyAmount)}</span>` : '-'}</td>`;
+                            html += `<td>${totalMonthlyGain > 0 ? `<span class="interest-gained">$${format(totalMonthlyGain)}</span>` : '-'}</td>`;
                         }
                         html += `</tr>`;
                     }
@@ -1346,6 +1350,7 @@
                         const yearData = yearlyPoints[year - 1];
                         if (yearData && yearData.amount > 0) {
                             totalYearlyAmount += yearData.amount;
+                            totalYearlyGain += yearData.interest;
                             html += `
                                 <td>
                                     <span class="amount">$${format(yearData.amount)}</span>
@@ -1358,6 +1363,7 @@
                     });
                     if (results.length > 1) {
                         html += `<td>${totalYearlyAmount > 0 ? `<span class="amount">$${format(totalYearlyAmount)}</span>` : '-'}</td>`;
+                        html += `<td>${totalYearlyGain > 0 ? `<span class="interest-gained">$${format(totalYearlyGain)}</span>` : '-'}</td>`;
                     }
                     html += `</tr>`;
                 }
@@ -1365,11 +1371,13 @@
                 for (let year = 1; year <= years; year++) {
                     for (let month = 1; month <= 12; month++) {
                         let totalMonthlyAmount = 0;
+                        let totalMonthlyGain = 0;
                         html += `<tr><td>Year ${year}, Month ${month}</td>`;
                         results.forEach(result => {
                             const monthData = result.breakdownData.find(d => d.year === year && d.month === month);
                             if (monthData && monthData.amount > 0) {
                                 totalMonthlyAmount += monthData.amount;
+                                totalMonthlyGain += monthData.interest;
                                 html += `
                                     <td>
                                         <span class="amount">$${format(monthData.amount)}</span>
@@ -1382,6 +1390,7 @@
                         });
                         if (results.length > 1) {
                             html += `<td>${totalMonthlyAmount > 0 ? `<span class="amount">$${format(totalMonthlyAmount)}</span>` : '-'}</td>`;
+                            html += `<td>${totalMonthlyGain > 0 ? `<span class="interest-gained">$${format(totalMonthlyGain)}</span>` : '-'}</td>`;
                         }
                         html += `</tr>`;
                     }
