@@ -1287,6 +1287,7 @@
                             <tr>
                                 <th>${breakdownType === 'yearly' ? 'Year' : 'Year/Month'}</th>
                                 ${results.map(result => `<th>${result.name}</th>`).join('')}
+                                ${results.length > 1 ? '<th>Total</th>' : ''}
                             </tr>
                         </thead>
                         <tbody>
@@ -1296,6 +1297,7 @@
 
             if (breakdownType === 'yearly') {
                 for (let year = 1; year <= years; year++) {
+                    let totalYearlyAmount = 0;
                     html += `
                         <tr>
                             <td>
@@ -1306,15 +1308,18 @@
                                             <tr>
                                                 <th>Month</th>
                                                 ${results.map(result => `<th>${result.name}</th>`).join('')}
+                                                ${results.length > 1 ? '<th>Total</th>' : ''}
                                             </tr>
                                         </thead>
                                         <tbody>
                     `;
                     for (let month = 1; month <= 12; month++) {
+                        let totalMonthlyAmount = 0;
                         html += `<tr><td>Month ${month}</td>`;
                         results.forEach(result => {
                             const monthData = result.breakdownData.find(d => d.type === 'month' && d.year === year && d.month === month);
                             if (monthData && monthData.amount > 0) {
+                                totalMonthlyAmount += monthData.amount;
                                 html += `
                                     <td>
                                         <span class="amount">$${format(monthData.amount)}</span>
@@ -1325,6 +1330,9 @@
                                 html += `<td>-</td>`;
                             }
                         });
+                        if (results.length > 1) {
+                            html += `<td>${totalMonthlyAmount > 0 ? `<span class="amount">$${format(totalMonthlyAmount)}</span>` : '-'}</td>`;
+                        }
                         html += `</tr>`;
                     }
                     html += `
@@ -1337,6 +1345,7 @@
                         const yearlyPoints = result.breakdownData.filter(d => d.type === 'year' || d.month === 12);
                         const yearData = yearlyPoints[year - 1];
                         if (yearData && yearData.amount > 0) {
+                            totalYearlyAmount += yearData.amount;
                             html += `
                                 <td>
                                     <span class="amount">$${format(yearData.amount)}</span>
@@ -1347,15 +1356,20 @@
                             html += `<td>-</td>`;
                         }
                     });
+                    if (results.length > 1) {
+                        html += `<td>${totalYearlyAmount > 0 ? `<span class="amount">$${format(totalYearlyAmount)}</span>` : '-'}</td>`;
+                    }
                     html += `</tr>`;
                 }
             } else {
                 for (let year = 1; year <= years; year++) {
                     for (let month = 1; month <= 12; month++) {
+                        let totalMonthlyAmount = 0;
                         html += `<tr><td>Year ${year}, Month ${month}</td>`;
                         results.forEach(result => {
                             const monthData = result.breakdownData.find(d => d.year === year && d.month === month);
                             if (monthData && monthData.amount > 0) {
+                                totalMonthlyAmount += monthData.amount;
                                 html += `
                                     <td>
                                         <span class="amount">$${format(monthData.amount)}</span>
@@ -1366,6 +1380,9 @@
                                 html += `<td>-</td>`;
                             }
                         });
+                        if (results.length > 1) {
+                            html += `<td>${totalMonthlyAmount > 0 ? `<span class="amount">$${format(totalMonthlyAmount)}</span>` : '-'}</td>`;
+                        }
                         html += `</tr>`;
                     }
                 }
