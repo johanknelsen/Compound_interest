@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETF Growth Predictor | Age-Based Planning</title>
+    <title>ETF Growth Predictor | Detailed Analysis</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #667eea;
             --secondary: #764ba2;
             --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --glass: rgba(255, 255, 255, 0.95);
+            --glass: rgba(255, 255, 255, 0.96);
         }
 
         body {
@@ -28,25 +28,24 @@
             background: var(--glass);
             border-radius: 1.5rem;
             padding: min(4vw, 30px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            font-weight: 300;
-        }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; font-weight: 300; }
+
+        /* View Management */
+        .view-section { display: none; }
+        .view-active { display: block; }
 
         .age-input-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             background: #f8f9fa;
-            padding: 25px;
+            padding: 20px;
             border-radius: 1rem;
             border-left: 5px solid var(--primary);
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .etf-section {
@@ -54,194 +53,247 @@
             padding: 20px;
             border-radius: 0.75rem;
             margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        .etf-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .input-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 500; color: #34495e; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; color: #444; }
         
         input[type="number"], input[type="text"] {
-            width: 100%; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px;
-            font-size: 1rem; transition: border-color 0.3s; box-sizing: border-box;
+            width: 100%; padding: 10px; border: 2px solid #e9ecef; border-radius: 8px;
+            font-size: 1rem; box-sizing: border-box;
         }
-
-        input:focus { border-color: var(--primary); outline: none; }
 
         .btn {
             background: var(--bg-gradient); color: white; border: none;
             padding: 12px 24px; border-radius: 8px; cursor: pointer;
-            font-weight: 500; transition: transform 0.2s; margin-bottom: 20px;
+            font-weight: 500; transition: all 0.2s;
         }
 
-        .btn:hover { transform: translateY(-2px); }
+        .btn:hover { transform: translateY(-1px); opacity: 0.9; }
+        .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
 
-        .results-section {
-            background: #f8f9fa; padding: 25px; border-radius: 1rem;
-            border-left: 5px solid #28a745; margin-top: 30px;
-        }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e9ecef; }
-        th { background: var(--primary); color: white; }
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; text-align: right; border-bottom: 1px solid #eee; }
+        th:first-child, td:first-child { text-align: left; }
+        th { background: var(--primary); color: white; font-weight: 500; position: sticky; top: 0; }
         .best-performer { background: #d4edda !important; font-weight: bold; }
 
-        .duration-badge {
-            grid-column: span 2;
-            text-align: center;
-            font-weight: bold;
-            color: var(--secondary);
-            padding-top: 10px;
-        }
+        /* Breakdown Controls */
+        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .toggle-group { display: flex; background: #eee; border-radius: 8px; padding: 4px; }
+        .toggle-btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; background: transparent; font-weight: 500; }
+        .toggle-btn.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: var(--primary); }
+
+        .duration-badge { grid-column: span 2; text-align: center; color: var(--secondary); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>ETF Growth Predictor</h1>
+    <div id="view-comparison" class="view-section view-active">
+        <h1>ETF Growth Predictor</h1>
+        
+        <div class="age-input-group">
+            <div>
+                <label>Starting Age</label>
+                <input type="number" id="start-age" value="30" oninput="calculateSummary()">
+            </div>
+            <div>
+                <label>Target Age</label>
+                <input type="number" id="end-age" value="65" oninput="calculateSummary()">
+            </div>
+            <div class="duration-badge" id="duration-text">Investment Duration: 35 Years</div>
+        </div>
 
-    <div class="age-input-group">
-        <div>
-            <label>Starting Age</label>
-            <input type="number" id="start-age" value="30" min="0" max="100" oninput="calculateProjections()">
+        <div id="etfs-container"></div>
+        
+        <button class="btn btn-outline" onclick="addETF()">+ Add Comparison ETF</button>
+
+        <div id="results-area" style="margin-top: 30px;">
+            <div id="comparison-table-container"></div>
         </div>
-        <div>
-            <label>Target Retirement Age</label>
-            <input type="number" id="end-age" value="65" min="0" max="100" oninput="calculateProjections()">
-        </div>
-        <div class="duration-badge" id="duration-text">Investment Duration: 35 Years</div>
     </div>
 
-    <div id="etfs-container">
+    <div id="view-details" class="view-section">
+        <div class="controls-row">
+            <button class="btn btn-outline" onclick="switchView('comparison')">← Back to Comparison</button>
+            <div class="toggle-group">
+                <button id="toggle-yearly" class="toggle-btn active" onclick="setFrequency('yearly')">Yearly</button>
+                <button id="toggle-monthly" class="toggle-btn" onclick="setFrequency('monthly')">Monthly</button>
+            </div>
         </div>
-
-    <button class="btn" onclick="addETF()">+ Add Comparison Scenario</button>
-
-    <div class="results-section" id="results" style="display:none;">
-        <h2>Financial Comparison at Age <span id="target-age-display">65</span></h2>
-        <div id="comparison-table-container"></div>
+        <h2 id="details-title">Detailed Returns Breakdown</h2>
+        <div style="max-height: 600px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px;">
+            <table id="breakdown-table">
+                <thead>
+                    <tr id="breakdown-header"></tr>
+                </thead>
+                <tbody id="breakdown-body"></tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <script>
-    let etfCount = 0;
+    let scenarios = [];
+    let currentDetailIndex = 0;
+    let currentFrequency = 'yearly';
 
     function addETF() {
-        etfCount++;
-        const container = document.getElementById('etfs-container');
-        const div = document.createElement('div');
-        div.className = 'etf-section';
-        div.id = `etf-${etfCount}`;
-        div.innerHTML = `
-            <div class="etf-header">
-                <strong>Scenario: ${etfCount === 1 ? 'Aggressive Growth' : 'Conservative Growth'}</strong>
-                <button onclick="removeETF(${etfCount})" style="color:red; background:none; border:none; cursor:pointer;">Remove</button>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
-                <div class="input-group">
-                    <label>Initial Investment ($)</label>
-                    <input type="number" class="etf-initial" value="${etfCount === 1 ? 10000 : 20000}" oninput="calculateProjections()">
-                </div>
-                <div class="input-group">
-                    <label>Monthly Contribution ($)</label>
-                    <input type="number" class="etf-monthly" value="${etfCount === 1 ? 500 : 300}" oninput="calculateProjections()">
-                </div>
-                <div class="input-group">
-                    <label>Annual Return (%)</label>
-                    <input type="number" class="etf-rate" value="${etfCount === 1 ? 10 : 7}" step="0.1" oninput="calculateProjections()">
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-        calculateProjections();
+        const id = Date.now();
+        const scenario = {
+            id: id,
+            name: `Scenario ${scenarios.length + 1}`,
+            initial: scenarios.length === 0 ? 10000 : 5000,
+            monthly: scenarios.length === 0 ? 500 : 250,
+            rate: scenarios.length === 0 ? 8 : 10
+        };
+        scenarios.push(scenario);
+        renderScenarios();
+        calculateSummary();
     }
 
     function removeETF(id) {
-        document.getElementById(`etf-${id}`).remove();
-        calculateProjections();
+        scenarios = scenarios.filter(s => s.id !== id);
+        renderScenarios();
+        calculateSummary();
     }
 
-    function calculateProjections() {
+    function renderScenarios() {
+        const container = document.getElementById('etfs-container');
+        container.innerHTML = scenarios.map((s, idx) => `
+            <div class="etf-section">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <input type="text" value="${s.name}" onchange="updateVal(${idx}, 'name', this.value)" style="border:none; font-weight:bold; font-size:1.1rem; width: auto; background:transparent;">
+                    <button class="btn-sm btn-outline" style="color:red; border-color:red;" onclick="removeETF(${s.id})">Remove</button>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    <div class="input-group">
+                        <label>Initial Investment ($)</label>
+                        <input type="number" value="${s.initial}" oninput="updateVal(${idx}, 'initial', this.value)">
+                    </div>
+                    <div class="input-group">
+                        <label>Monthly Contrib. ($)</label>
+                        <input type="number" value="${s.monthly}" oninput="updateVal(${idx}, 'monthly', this.value)">
+                    </div>
+                    <div class="input-group">
+                        <label>Annual Return (%)</label>
+                        <input type="number" value="${s.rate}" step="0.1" oninput="updateVal(${idx}, 'rate', this.value)">
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateVal(idx, key, val) {
+        scenarios[idx][key] = key === 'name' ? val : parseFloat(val);
+        calculateSummary();
+    }
+
+    function calculateSummary() {
         const startAge = parseInt(document.getElementById('start-age').value) || 0;
         const endAge = parseInt(document.getElementById('end-age').value) || 0;
-        const years = endAge - startAge;
-        
-        document.getElementById('duration-text').textContent = `Investment Duration: ${years > 0 ? years : 0} Years`;
-        document.getElementById('target-age-display').textContent = endAge;
+        const years = Math.max(0, endAge - startAge);
+        document.getElementById('duration-text').textContent = `Investment Duration: ${years} Years`;
 
-        const etfSections = document.querySelectorAll('.etf-section');
-        if (etfSections.length === 0 || years <= 0) {
-            document.getElementById('results').style.display = 'none';
+        if (scenarios.length === 0) {
+            document.getElementById('comparison-table-container').innerHTML = '';
             return;
         }
 
-        document.getElementById('results').style.display = 'block';
-        let results = [];
-
-        etfSections.forEach((section, index) => {
-            const initial = parseFloat(section.querySelector('.etf-initial').value) || 0;
-            const monthly = parseFloat(section.querySelector('.etf-monthly').value) || 0;
-            const annualRate = parseFloat(section.querySelector('.etf-rate').value) || 0;
-            
-            const monthlyRate = (annualRate / 100) / 12;
-            const totalMonths = years * 12;
-
-            let balance = initial;
-            let totalContributed = initial;
-
-            for (let i = 0; i < totalMonths; i++) {
-                balance = (balance + monthly) * (1 + monthlyRate);
-                totalContributed += monthly;
-            }
-
-            results.push({
-                index: index + 1,
-                finalBalance: balance,
-                contributions: totalContributed,
-                interest: balance - totalContributed
-            });
-        });
-
-        const maxBalance = Math.max(...results.map(r => r.finalBalance));
+        let summaryHtml = `<table><thead><tr><th>Scenario</th><th>Contributions</th><th>Interest</th><th>Total Value</th><th>Details</th></tr></thead><tbody>`;
         
-        let html = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>Scenario</th>
-                        <th>Total Contributed</th>
-                        <th>Interest Earned</th>
-                        <th>Portfolio Value at Age ${endAge}</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-        results.forEach(res => {
-            const isBest = res.finalBalance === maxBalance && results.length > 1;
-            html += `
-                <tr class="${isBest ? 'best-performer' : ''}">
-                    <td>Scenario #${res.index} ${isBest ? '⭐' : ''}</td>
-                    <td>$${res.contributions.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
-                    <td>$${res.interest.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
-                    <td><strong>$${res.finalBalance.toLocaleString(undefined, {maximumFractionDigits:0})}</strong></td>
-                </tr>
-            `;
+        scenarios.forEach((s, idx) => {
+            const data = runSimulation(s, years);
+            summaryHtml += `
+                <tr>
+                    <td>${s.name}</td>
+                    <td>$${data.totalContributed.toLocaleString()}</td>
+                    <td>$${data.totalInterest.toLocaleString()}</td>
+                    <td><strong>$${data.finalBalance.toLocaleString(undefined, {maximumFractionDigits:0})}</strong></td>
+                    <td><button class="btn btn-sm" onclick="showDetails(${idx})">View</button></td>
+                </tr>`;
         });
-
-        html += `</tbody></table>`;
-        document.getElementById('comparison-table-container').innerHTML = html;
+        summaryHtml += `</tbody></table>`;
+        document.getElementById('comparison-table-container').innerHTML = summaryHtml;
     }
 
-    // Initialize with default scenarios
-    addETF();
+    function runSimulation(s, years) {
+        const monthlyRate = (s.rate / 100) / 12;
+        let balance = s.initial;
+        let contributed = s.initial;
+        for (let i = 0; i < years * 12; i++) {
+            balance = (balance + s.monthly) * (1 + monthlyRate);
+            contributed += s.monthly;
+        }
+        return { finalBalance: balance, totalContributed: contributed, totalInterest: balance - contributed };
+    }
+
+    function switchView(view) {
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('view-active'));
+        document.getElementById(`view-${view}`).classList.add('view-active');
+        window.scrollTo(0,0);
+    }
+
+    function setFrequency(freq) {
+        currentFrequency = freq;
+        document.getElementById('toggle-yearly').classList.toggle('active', freq === 'yearly');
+        document.getElementById('toggle-monthly').classList.toggle('active', freq === 'monthly');
+        renderBreakdown();
+    }
+
+    function showDetails(idx) {
+        currentDetailIndex = idx;
+        switchView('details');
+        renderBreakdown();
+    }
+
+    function renderBreakdown() {
+        const s = scenarios[currentDetailIndex];
+        const startAge = parseInt(document.getElementById('start-age').value);
+        const endAge = parseInt(document.getElementById('end-age').value);
+        const years = endAge - startAge;
+        const monthlyRate = (s.rate / 100) / 12;
+
+        document.getElementById('details-title').textContent = `${s.name} - ${currentFrequency.charAt(0).toUpperCase() + currentFrequency.slice(1)} Breakdown`;
+        
+        const header = document.getElementById('breakdown-header');
+        header.innerHTML = `<th>${currentFrequency === 'yearly' ? 'Year (Age)' : 'Month'}</th><th>Start Balance</th><th>Contributions</th><th>Interest</th><th>End Balance</th>`;
+
+        const body = document.getElementById('breakdown-body');
+        body.innerHTML = '';
+
+        let balance = s.initial;
+        let totalMonths = years * 12;
+
+        if (currentFrequency === 'yearly') {
+            for (let y = 0; y < years; y++) {
+                let yearStart = balance;
+                let yearInterest = 0;
+                let yearContrib = 0;
+                for (let m = 0; m < 12; m++) {
+                    let interest = balance * monthlyRate;
+                    balance = balance + interest + s.monthly;
+                    yearInterest += interest;
+                    yearContrib += s.monthly;
+                }
+                body.innerHTML += `<tr><td>Year ${y + 1} (Age ${startAge + y + 1})</td><td>$${yearStart.toLocaleString()}</td><td>$${yearContrib.toLocaleString()}</td><td>$${yearInterest.toLocaleString(undefined, {maximumFractionDigits:0})}</td><td><strong>$${balance.toLocaleString(undefined, {maximumFractionDigits:0})}</strong></td></tr>`;
+            }
+        } else {
+            for (let m = 0; m < totalMonths; m++) {
+                let start = balance;
+                let interest = balance * monthlyRate;
+                balance = balance + interest + s.monthly;
+                body.innerHTML += `<tr><td>Month ${m + 1}</td><td>$${start.toLocaleString(undefined, {maximumFractionDigits:0})}</td><td>$${s.monthly.toLocaleString()}</td><td>$${interest.toLocaleString(undefined, {maximumFractionDigits:0})}</td><td><strong>$${balance.toLocaleString(undefined, {maximumFractionDigits:0})}</strong></td></tr>`;
+            }
+        }
+    }
+
+    // Init
     addETF();
 </script>
 </body>
