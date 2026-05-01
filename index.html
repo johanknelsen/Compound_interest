@@ -3,255 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETF Growth Predictor | Precise Age Tracking</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>The Freedom Map | Early Wealth Story</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --glass: rgba(255, 255, 255, 0.96);
+            --primary: #2563eb;
+            --success: #059669;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --card: #ffffff;
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background: var(--bg-gradient);
-            min-height: 100vh;
-            padding: 2vw;
-            color: #333;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: #1e293b;
             margin: 0;
+            padding: 20px;
+            line-height: 1.5;
         }
+
+        .hero {
+            max-width: 900px;
+            margin: 40px auto;
+            text-align: center;
+        }
+
+        .hero h1 { font-size: 2.5rem; font-weight: 800; color: #0f172a; margin-bottom: 10px; }
+        .hero p { font-size: 1.1rem; color: #64748b; max-width: 600px; margin: 0 auto; }
 
         .container {
-            max-width: min(1200px, 95vw);
+            max-width: 1000px;
             margin: 0 auto;
-            background: var(--glass);
-            border-radius: 1.5rem;
-            padding: min(4vw, 30px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        h1 { text-align: center; color: #2c3e50; margin-bottom: 5px; font-weight: 300; }
-        .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 0.9rem; }
-
-        .view-section { display: none; }
-        .view-active { display: block; }
-
-        .etf-section {
-            background: #fff;
-            padding: 20px;
-            border-radius: 0.75rem;
-            margin-bottom: 20px;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        .story-card {
+            background: var(--card);
+            border-radius: 1rem;
+            padding: 30px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            border-top: 5px solid var(--primary);
         }
 
-        .input-grid {
+        .input-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
 
-        .input-group { margin-bottom: 10px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.75rem; color: #555; text-transform: uppercase; }
-        
-        input[type="number"], input[type="text"] {
-            width: 100%; padding: 10px; border: 2px solid #edf2f7; border-radius: 8px;
-            font-size: 1rem; box-sizing: border-box; background: #f8fafc;
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { outline: none; border-color: var(--primary); }
+
+        .comparison-zone {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) { .comparison-zone { grid-template-columns: 1fr; } }
+
+        .stat-box {
+            background: #f1f5f9;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-val { font-size: 2rem; font-weight: 800; color: var(--primary); display: block; }
+        .stat-label { font-size: 0.9rem; color: #64748b; font-weight: 600; }
+
+        .highlight-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
         }
 
         .btn {
-            background: var(--bg-gradient); color: white; border: none;
-            padding: 12px 24px; border-radius: 8px; cursor: pointer;
-            font-weight: 500; transition: all 0.2s;
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
         }
 
-        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
-        .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
-        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        .btn-secondary { background: #64748b; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        th, td { padding: 12px; text-align: right; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-        th:first-child, td:first-child { text-align: left; }
-        th { background: #f8fafc; color: #4a5568; font-weight: 600; position: sticky; top: 0; z-index: 10; }
-
-        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .toggle-group { display: flex; background: #edf2f7; border-radius: 8px; padding: 4px; }
-        .toggle-btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; background: transparent; font-weight: 600; color: #718096; }
-        .toggle-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-
-        .scroll-container { max-height: 65vh; overflow-y: auto; border: 1px solid #edf2f7; border-radius: 12px; }
+        .ledger-view { display: none; background: white; border-radius: 1rem; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid #f1f5f9; color: #64748b; font-size: 0.8rem; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: #dcfce7;
+            color: #166534;
+        }
     </style>
 </head>
 <body>
 
+<div class="hero">
+    <h1>The Cost of Waiting</h1>
+    <p>Time is the only asset you can't buy back. See how starting 5 years earlier changes your entire life's trajectory.</p>
+</div>
+
 <div class="container">
-    <div id="view-comparison" class="view-section view-active">
-        <h1>Cloud-Native Growth Predictor</h1>
-        <p class="subtitle">Compare independent timelines and contribution strategies.</p>
-        
-        <div id="etfs-container"></div>
-        <button class="btn" style="margin-bottom: 30px;" onclick="addETF()">+ Add New Scenario</button>
-
-        <div id="comparison-table-container"></div>
-    </div>
-
-    <div id="view-details" class="view-section">
-        <div class="controls-row">
-            <button class="btn btn-outline" onclick="switchView('comparison')">← Back to Overview</button>
-            <div class="toggle-group">
-                <button id="toggle-yearly" class="toggle-btn active" onclick="setFrequency('yearly')">Yearly</button>
-                <button id="toggle-monthly" class="toggle-btn" onclick="setFrequency('monthly')">Monthly</button>
+    <div class="story-card">
+        <h3 style="margin-top:0">1. Define Your Path</h3>
+        <div class="input-row">
+            <div class="input-group">
+                <label>Current Age</label>
+                <input type="number" id="startAge" value="25" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label>Monthly Contribution</label>
+                <input type="number" id="monthly" value="500" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label>Estimated Return (%)</label>
+                <input type="number" id="rate" value="8" oninput="calculate()">
             </div>
         </div>
-        <h2 id="details-title" style="margin: 0;">Ledger Details</h2>
-        <p id="details-subtitle" style="color: #666; margin-bottom: 20px;"></p>
-        
-        <div class="scroll-container">
-            <table id="breakdown-table">
-                <thead><tr id="breakdown-header"></tr></thead>
-                <tbody id="breakdown-body"></tbody>
-            </table>
+    </div>
+
+    <div class="comparison-zone">
+        <!-- Scenario A -->
+        <div class="stat-box" style="border-bottom: 4px solid var(--success);">
+            <span class="badge">PROACTIVE</span>
+            <p>If you start <strong>Today</strong></p>
+            <span id="res-early-val" class="stat-val">$0</span>
+            <span class="stat-label">Portfolio at Age 65</span>
         </div>
+
+        <!-- Scenario B -->
+        <div class="stat-box" style="border-bottom: 4px solid var(--accent);">
+            <span class="badge" style="background:#fef3c7; color:#92400e;">DELAYED</span>
+            <p>If you wait <strong>10 Years</strong></p>
+            <span id="res-late-val" class="stat-val">$0</span>
+            <span class="stat-label">Portfolio at Age 65</span>
+        </div>
+    </div>
+
+    <div class="highlight-box">
+        <h4 style="margin:0; color:#1e40af;">The "Waiting Tax"</h4>
+        <p id="waiting-tax-text" style="margin: 10px 0 0 0;">Waiting 10 years will cost you <strong>$0</strong> in potential wealth. That's money you'd have to earn through extra labor later in life.</p>
+    </div>
+
+    <button class="btn" onclick="toggleLedger()">View Year-by-Year Freedom Map</button>
+
+    <div id="ledger" class="ledger-view">
+        <h3 id="ledger-title">Yearly Growth Journey</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Age</th>
+                    <th>Yearly Contribution</th>
+                    <th>Interest Gained</th>
+                    <th>Year-End Total</th>
+                </tr>
+            </thead>
+            <tbody id="ledger-body"></tbody>
+        </table>
     </div>
 </div>
 
 <script>
-    let scenarios = [];
-    let currentDetailIndex = 0;
-    let currentFrequency = 'yearly';
+    function calculate() {
+        const startAge = parseInt(document.getElementById('startAge').value);
+        const monthly = parseFloat(document.getElementById('monthly').value);
+        const rate = parseFloat(document.getElementById('rate').value) / 100 / 12;
+        const targetAge = 65;
 
-    function addETF() {
-        const id = Date.now();
-        scenarios.push({
-            id: id,
-            name: `Plan ${scenarios.length + 1}`,
-            startAge: 30,
-            endAge: 65,
-            initial: 5000,
-            monthly: 500,
-            rate: 8.0
-        });
-        renderScenarios();
-        calculateSummary();
-    }
+        const solve = (age) => {
+            let balance = 0;
+            const months = (targetAge - age) * 12;
+            for (let i = 0; i < months; i++) {
+                balance = (balance + monthly) * (1 + rate);
+            }
+            return balance;
+        };
 
-    function removeETF(id) {
-        scenarios = scenarios.filter(s => s.id !== id);
-        renderScenarios();
-        calculateSummary();
-    }
+        const early = solve(startAge);
+        const late = solve(startAge + 10);
+        const tax = early - late;
 
-    function updateVal(idx, key, val) {
-        scenarios[idx][key] = key === 'name' ? val : parseFloat(val);
-        calculateSummary();
-    }
-
-    function renderScenarios() {
-        const container = document.getElementById('etfs-container');
-        container.innerHTML = scenarios.map((s, idx) => `
-            <div class="etf-section">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                    <input type="text" value="${s.name}" onchange="updateVal(${idx}, 'name', this.value)" style="border:none; font-weight:bold; font-size:1.1rem; background:transparent;">
-                    <button class="btn-sm btn-outline" style="color:#e53e3e; border-color:#feb2b2;" onclick="removeETF(${s.id})">Delete</button>
-                </div>
-                <div class="input-grid">
-                    <div class="input-group"><label>Start Age</label><input type="number" value="${s.startAge}" oninput="updateVal(${idx}, 'startAge', this.value)"></div>
-                    <div class="input-group"><label>Target Age</label><input type="number" value="${s.endAge}" oninput="updateVal(${idx}, 'endAge', this.value)"></div>
-                    <div class="input-group"><label>Initial ($)</label><input type="number" value="${s.initial}" oninput="updateVal(${idx}, 'initial', this.value)"></div>
-                    <div class="input-group"><label>Monthly ($)</label><input type="number" value="${s.monthly}" oninput="updateVal(${idx}, 'monthly', this.value)"></div>
-                    <div class="input-group"><label>Rate (%)</label><input type="number" value="${s.rate}" step="0.1" oninput="updateVal(${idx}, 'rate', this.value)"></div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function calculateSummary() {
-        if (scenarios.length === 0) {
-            document.getElementById('comparison-table-container').innerHTML = '';
-            return;
-        }
-        let html = `<table><thead><tr><th>Strategy</th><th>Contributions</th><th>Interest</th><th>Final Value</th><th>Actions</th></tr></thead><tbody>`;
-        scenarios.forEach((s, idx) => {
-            const years = Math.max(0, s.endAge - s.startAge);
-            const data = runSimulation(s, years);
-            html += `<tr>
-                <td><strong>${s.name}</strong><br><small>Ages ${s.startAge}-${s.endAge}</small></td>
-                <td>$${data.totalContributed.toLocaleString()}</td>
-                <td>$${data.totalInterest.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
-                <td><strong style="color:var(--primary)">$${data.finalBalance.toLocaleString(undefined, {maximumFractionDigits:0})}</strong></td>
-                <td><button class="btn btn-sm" onclick="showDetails(${idx})">View Ledger</button></td>
-            </tr>`;
-        });
-        html += `</tbody></table>`;
-        document.getElementById('comparison-table-container').innerHTML = html;
-    }
-
-    function runSimulation(s, years) {
-        const monthlyRate = (s.rate / 100) / 12;
-        let balance = s.initial;
-        let contributed = s.initial;
-        for (let i = 0; i < years * 12; i++) {
-            balance = (balance + s.monthly) * (1 + monthlyRate);
-            contributed += s.monthly;
-        }
-        return { finalBalance: balance, totalContributed: contributed, totalInterest: balance - contributed };
-    }
-
-    function switchView(view) {
-        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('view-active'));
-        document.getElementById(`view-${view}`).classList.add('view-active');
-        window.scrollTo(0,0);
-    }
-
-    function setFrequency(freq) {
-        currentFrequency = freq;
-        document.getElementById('toggle-yearly').classList.toggle('active', freq === 'yearly');
-        document.getElementById('toggle-monthly').classList.toggle('active', freq === 'monthly');
-        renderBreakdown();
-    }
-
-    function showDetails(idx) {
-        currentDetailIndex = idx;
-        switchView('details');
-        renderBreakdown();
-    }
-
-    function renderBreakdown() {
-        const s = scenarios[currentDetailIndex];
-        const years = Math.max(0, s.endAge - s.startAge);
-        const monthlyRate = (s.rate / 100) / 12;
-        document.getElementById('details-subtitle').textContent = `${s.name} | ${s.rate}% APY | Growth over ${years} years`;
+        document.getElementById('res-early-val').textContent = '$' + Math.round(early).toLocaleString();
+        document.getElementById('res-late-val').textContent = '$' + Math.round(late).toLocaleString();
+        document.getElementById('waiting-tax-text').innerHTML = `Waiting 10 years (starting at ${startAge + 10}) will cost you <strong>$${Math.round(tax).toLocaleString()}</strong> in potential wealth. To make up this gap, you'd need to work significantly harder or longer.`;
         
-        document.getElementById('breakdown-header').innerHTML = `<th>${currentFrequency === 'yearly' ? 'Year (Age)' : 'Timeline'}</th><th>Start Balance</th><th>Contrib.</th><th>Interest</th><th>End Balance</th>`;
+        renderLedger(startAge, monthly, rate);
+    }
 
-        const body = document.getElementById('breakdown-body');
+    function renderLedger(startAge, monthly, rate) {
+        const body = document.getElementById('ledger-body');
         body.innerHTML = '';
-        let balance = s.initial;
+        let balance = 0;
+        
+        for (let age = startAge; age <= 65; age++) {
+            let yearlyInterest = 0;
+            let yearlyContrib = monthly * 12;
+            
+            for (let m = 0; m < 12; m++) {
+                let interest = balance * rate;
+                balance = balance + interest + monthly;
+                yearlyInterest += interest;
+            }
 
-        if (currentFrequency === 'yearly') {
-            for (let y = 0; y < years; y++) {
-                let start = balance, yInterest = 0, yContrib = 0;
-                for (let m = 0; m < 12; m++) {
-                    let interest = balance * monthlyRate;
-                    balance = balance + interest + s.monthly;
-                    yInterest += interest; yContrib += s.monthly;
-                }
-                body.innerHTML += `<tr><td>Year ${y + 1} (Age ${s.startAge + y + 1})</td><td>$${start.toLocaleString(undefined, {maximumFractionDigits:0})}</td><td>$${yContrib.toLocaleString()}</td><td>$${yInterest.toLocaleString(undefined, {maximumFractionDigits:0})}</td><td><strong>$${balance.toLocaleString(undefined, {maximumFractionDigits:0})}</strong></td></tr>`;
-            }
-        } else {
-            for (let m = 0; m < (years * 12); m++) {
-                let start = balance;
-                let currentAge = s.startAge + Math.floor(m / 12);
-                let monthOfyear = (m % 12) + 1;
-                let interest = balance * monthlyRate;
-                balance = balance + interest + s.monthly;
-                body.innerHTML += `<tr><td>Age ${currentAge} - Mo ${monthOfyear}</td><td>$${start.toLocaleString(undefined, {maximumFractionDigits:0})}</td><td>$${s.monthly.toLocaleString()}</td><td>$${interest.toLocaleString(undefined, {maximumFractionDigits:0})}</td><td><strong>$${balance.toLocaleString(undefined, {maximumFractionDigits:0})}</strong></td></tr>`;
-            }
+            const row = `<tr>
+                <td><strong>Age ${age}</strong></td>
+                <td>$${yearlyContrib.toLocaleString()}</td>
+                <td style="color:#059669">+$${Math.round(yearlyInterest).toLocaleString()}</td>
+                <td><strong>$${Math.round(balance).toLocaleString()}</strong></td>
+            </tr>`;
+            body.innerHTML += row;
         }
     }
 
-    addETF();
+    function toggleLedger() {
+        const l = document.getElementById('ledger');
+        l.style.display = l.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Init
+    calculate();
 </script>
+
 </body>
 </html>
