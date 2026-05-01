@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETF Growth Predictor | Financial independence</title>
+    <title>ETF Growth Predictor | Age-Based Planning</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -38,7 +38,10 @@
             font-weight: 300;
         }
 
-        .input-section {
+        .age-input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             background: #f8f9fa;
             padding: 25px;
             border-radius: 1rem;
@@ -65,41 +68,17 @@
         .input-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: 500; color: #34495e; }
         
-        input[type="number"], input[type="text"], select {
+        input[type="number"], input[type="text"] {
             width: 100%; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px;
-            font-size: 1rem; transition: border-color 0.3s;
+            font-size: 1rem; transition: border-color 0.3s; box-sizing: border-box;
         }
 
-        /* Dual Slider Styling */
-        .dual-slider-container {
-            position: relative; width: 100%; height: 50px; margin-top: 10px;
-        }
-        
-        .slider-track {
-            position: absolute; height: 8px; width: 100%;
-            background: #dfe6e9; border-radius: 4px; top: 50%; transform: translateY(-50%);
-        }
-
-        .slider-range {
-            position: absolute; height: 8px; background: var(--primary);
-            border-radius: 4px; top: 50%; transform: translateY(-50%);
-        }
-
-        input[type="range"] {
-            position: absolute; width: 100%; pointer-events: none;
-            -webkit-appearance: none; background: none; top: 50%; transform: translateY(-50%);
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            pointer-events: auto; -webkit-appearance: none;
-            width: 20px; height: 20px; background: var(--primary);
-            border-radius: 50%; cursor: pointer; border: 2px solid #fff;
-        }
+        input:focus { border-color: var(--primary); outline: none; }
 
         .btn {
             background: var(--bg-gradient); color: white; border: none;
             padding: 12px 24px; border-radius: 8px; cursor: pointer;
-            font-weight: 500; transition: transform 0.2s;
+            font-weight: 500; transition: transform 0.2s; margin-bottom: 20px;
         }
 
         .btn:hover { transform: translateY(-2px); }
@@ -113,6 +92,14 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e9ecef; }
         th { background: var(--primary); color: white; }
         .best-performer { background: #d4edda !important; font-weight: bold; }
+
+        .duration-badge {
+            grid-column: span 2;
+            text-align: center;
+            font-weight: bold;
+            color: var(--secondary);
+            padding-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -120,18 +107,25 @@
 <div class="container">
     <h1>ETF Growth Predictor</h1>
 
-    <div class="input-section">
-        <label>Total Projection Years (e.g., 35 for Age 30 to 65)</label>
-        <input type="number" id="projection-years" value="35" onchange="calculateProjections()">
+    <div class="age-input-group">
+        <div>
+            <label>Starting Age</label>
+            <input type="number" id="start-age" value="30" min="0" max="100" oninput="calculateProjections()">
+        </div>
+        <div>
+            <label>Target Retirement Age</label>
+            <input type="number" id="end-age" value="65" min="0" max="100" oninput="calculateProjections()">
+        </div>
+        <div class="duration-badge" id="duration-text">Investment Duration: 35 Years</div>
     </div>
 
     <div id="etfs-container">
         </div>
 
-    <button class="btn" onclick="addETF()">+ Add Comparison ETF</button>
+    <button class="btn" onclick="addETF()">+ Add Comparison Scenario</button>
 
     <div class="results-section" id="results" style="display:none;">
-        <h2>Comparison Results</h2>
+        <h2>Financial Comparison at Age <span id="target-age-display">65</span></h2>
         <div id="comparison-table-container"></div>
     </div>
 </div>
@@ -147,24 +141,22 @@
         div.id = `etf-${etfCount}`;
         div.innerHTML = `
             <div class="etf-header">
-                <strong>ETF Scenario #${etfCount}</strong>
+                <strong>Scenario: ${etfCount === 1 ? 'Aggressive Growth' : 'Conservative Growth'}</strong>
                 <button onclick="removeETF(${etfCount})" style="color:red; background:none; border:none; cursor:pointer;">Remove</button>
             </div>
-            <div class="input-group">
-                <label>Scenario Name</label>
-                <input type="text" class="etf-name" value="Growth Plan ${etfCount}" oninput="calculateProjections()">
-            </div>
-            <div class="input-group">
-                <label>Initial Investment ($)</label>
-                <input type="number" class="etf-initial" value="10000" oninput="calculateProjections()">
-            </div>
-            <div class="input-group">
-                <label>Monthly Contribution ($)</label>
-                <input type="number" class="etf-monthly" value="500" oninput="calculateProjections()">
-            </div>
-            <div class="input-group">
-                <label>Annual Interest Rate (%)</label>
-                <input type="number" class="etf-rate" value="${7 + etfCount}" step="0.1" oninput="calculateProjections()">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div class="input-group">
+                    <label>Initial Investment ($)</label>
+                    <input type="number" class="etf-initial" value="${etfCount === 1 ? 10000 : 20000}" oninput="calculateProjections()">
+                </div>
+                <div class="input-group">
+                    <label>Monthly Contribution ($)</label>
+                    <input type="number" class="etf-monthly" value="${etfCount === 1 ? 500 : 300}" oninput="calculateProjections()">
+                </div>
+                <div class="input-group">
+                    <label>Annual Return (%)</label>
+                    <input type="number" class="etf-rate" value="${etfCount === 1 ? 10 : 7}" step="0.1" oninput="calculateProjections()">
+                </div>
             </div>
         `;
         container.appendChild(div);
@@ -177,10 +169,15 @@
     }
 
     function calculateProjections() {
-        const years = parseInt(document.getElementById('projection-years').value) || 0;
-        const etfSections = document.querySelectorAll('.etf-section');
+        const startAge = parseInt(document.getElementById('start-age').value) || 0;
+        const endAge = parseInt(document.getElementById('end-age').value) || 0;
+        const years = endAge - startAge;
         
-        if (etfSections.length === 0) {
+        document.getElementById('duration-text').textContent = `Investment Duration: ${years > 0 ? years : 0} Years`;
+        document.getElementById('target-age-display').textContent = endAge;
+
+        const etfSections = document.querySelectorAll('.etf-section');
+        if (etfSections.length === 0 || years <= 0) {
             document.getElementById('results').style.display = 'none';
             return;
         }
@@ -188,11 +185,11 @@
         document.getElementById('results').style.display = 'block';
         let results = [];
 
-        etfSections.forEach(section => {
-            const name = section.querySelector('.etf-name').value;
+        etfSections.forEach((section, index) => {
             const initial = parseFloat(section.querySelector('.etf-initial').value) || 0;
             const monthly = parseFloat(section.querySelector('.etf-monthly').value) || 0;
             const annualRate = parseFloat(section.querySelector('.etf-rate').value) || 0;
+            
             const monthlyRate = (annualRate / 100) / 12;
             const totalMonths = years * 12;
 
@@ -205,7 +202,7 @@
             }
 
             results.push({
-                name,
+                index: index + 1,
                 finalBalance: balance,
                 contributions: totalContributed,
                 interest: balance - totalContributed
@@ -219,9 +216,9 @@
                 <thead>
                     <tr>
                         <th>Scenario</th>
-                        <th>Total Contributions</th>
-                        <th>Interest Gained</th>
-                        <th>Final Portfolio Value</th>
+                        <th>Total Contributed</th>
+                        <th>Interest Earned</th>
+                        <th>Portfolio Value at Age ${endAge}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -231,7 +228,7 @@
             const isBest = res.finalBalance === maxBalance && results.length > 1;
             html += `
                 <tr class="${isBest ? 'best-performer' : ''}">
-                    <td>${res.name} ${isBest ? '🏆' : ''}</td>
+                    <td>Scenario #${res.index} ${isBest ? '⭐' : ''}</td>
                     <td>$${res.contributions.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
                     <td>$${res.interest.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
                     <td><strong>$${res.finalBalance.toLocaleString(undefined, {maximumFractionDigits:0})}</strong></td>
@@ -243,7 +240,7 @@
         document.getElementById('comparison-table-container').innerHTML = html;
     }
 
-    // Initialize with two scenarios
+    // Initialize with default scenarios
     addETF();
     addETF();
 </script>
