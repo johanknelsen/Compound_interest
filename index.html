@@ -3,258 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Freedom Map | Early Wealth Story</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>The Freedom Date | Expense Coverage Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2563eb;
-            --success: #059669;
-            --accent: #f59e0b;
-            --bg: #f8fafc;
-            --card: #ffffff;
+            --freedom: #059669;
+            --warning: #dc2626;
+            --bg: #f1f5f9;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: #1e293b;
-            margin: 0;
-            padding: 20px;
-            line-height: 1.5;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #1e293b; margin: 0; padding: 20px; line-height: 1.6; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        
+        .header { text-align: center; padding: 40px 0; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; color: #0f172a; }
 
-        .hero {
-            max-width: 900px;
-            margin: 40px auto;
-            text-align: center;
-        }
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        @media (max-width: 768px) { .dashboard { grid-template-columns: 1fr; } }
 
-        .hero h1 { font-size: 2.5rem; font-weight: 800; color: #0f172a; margin-bottom: 10px; }
-        .hero p { font-size: 1.1rem; color: #64748b; max-width: 600px; margin: 0 auto; }
+        .card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .card h3 { margin-top: 0; font-size: 1.1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 20px; }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .story-card {
-            background: var(--card);
-            border-radius: 1rem;
-            padding: 30px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-            border-top: 5px solid var(--primary);
-        }
-
-        .input-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #475569;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
-
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
         input:focus { outline: none; border-color: var(--primary); }
 
-        .comparison-zone {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 30px;
-        }
+        .result-box { text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%; }
+        .freedom-stat { font-size: 3rem; font-weight: 800; color: var(--freedom); line-height: 1; }
+        .stat-sub { color: #64748b; font-size: 0.9rem; margin-top: 10px; }
 
-        @media (max-width: 768px) { .comparison-zone { grid-template-columns: 1fr; } }
-
-        .stat-box {
-            background: #f1f5f9;
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .stat-val { font-size: 2rem; font-weight: 800; color: var(--primary); display: block; }
-        .stat-label { font-size: 0.9rem; color: #64748b; font-weight: 600; }
-
-        .highlight-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 15px;
-        }
-
-        .btn-secondary { background: #64748b; }
-
-        .ledger-view { display: none; background: white; border-radius: 1rem; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { text-align: left; padding: 12px; border-bottom: 2px solid #f1f5f9; color: #64748b; font-size: 0.8rem; }
-        td { padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        .ledger-container { background: white; border-radius: 16px; overflow: hidden; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8fafc; text-align: left; padding: 15px; font-size: 0.8rem; color: #64748b; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
         
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            background: #dcfce7;
-            color: #166534;
-        }
+        .freedom-row { background-color: #ecfdf5 !important; font-weight: 700; }
+        .freedom-badge { background: var(--freedom); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 
-<div class="hero">
-    <h1>The Cost of Waiting</h1>
-    <p>Time is the only asset you can't buy back. See how starting 5 years earlier changes your entire life's trajectory.</p>
-</div>
-
 <div class="container">
-    <div class="story-card">
-        <h3 style="margin-top:0">1. Define Your Path</h3>
-        <div class="input-row">
+    <div class="header">
+        <h1>Your Freedom Date</h1>
+        <p>When will your investments cover your life, adjusted for inflation?</p>
+    </div>
+
+    <div class="dashboard">
+        <!-- INPUTS -->
+        <div class="card">
+            <h3>Wealth & Lifestyle</h3>
+            <div class="input-group">
+                <label>Current Monthly Expenses ($)</label>
+                <input type="number" id="expenses" value="4000" oninput="calculate()">
+            </div>
             <div class="input-group">
                 <label>Current Age</label>
-                <input type="number" id="startAge" value="25" oninput="calculate()">
+                <input type="number" id="age" value="28" oninput="calculate()">
             </div>
             <div class="input-group">
-                <label>Monthly Contribution</label>
-                <input type="number" id="monthly" value="500" oninput="calculate()">
+                <label>Monthly Contribution ($)</label>
+                <input type="number" id="monthlyAdd" value="1500" oninput="calculate()">
             </div>
             <div class="input-group">
-                <label>Estimated Return (%)</label>
-                <input type="number" id="rate" value="8" oninput="calculate()">
+                <label>Portfolio Return (%)</label>
+                <input type="number" id="returnRate" value="8" oninput="calculate()">
+            </div>
+            <div class="input-group">
+                <label>Est. Inflation (%)</label>
+                <input type="number" id="inflation" value="3" oninput="calculate()">
+            </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="card">
+            <div class="result-box">
+                <span class="stat-sub">Estimated Freedom Age</span>
+                <div id="freedomAge" class="freedom-stat">--</div>
+                <div id="freedomSummary" class="stat-sub" style="margin-top: 20px; padding: 0 20px;">
+                    Enter your data to find your crossover point.
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="comparison-zone">
-        <!-- Scenario A -->
-        <div class="stat-box" style="border-bottom: 4px solid var(--success);">
-            <span class="badge">PROACTIVE</span>
-            <p>If you start <strong>Today</strong></p>
-            <span id="res-early-val" class="stat-val">$0</span>
-            <span class="stat-label">Portfolio at Age 65</span>
-        </div>
-
-        <!-- Scenario B -->
-        <div class="stat-box" style="border-bottom: 4px solid var(--accent);">
-            <span class="badge" style="background:#fef3c7; color:#92400e;">DELAYED</span>
-            <p>If you wait <strong>10 Years</strong></p>
-            <span id="res-late-val" class="stat-val">$0</span>
-            <span class="stat-label">Portfolio at Age 65</span>
-        </div>
-    </div>
-
-    <div class="highlight-box">
-        <h4 style="margin:0; color:#1e40af;">The "Waiting Tax"</h4>
-        <p id="waiting-tax-text" style="margin: 10px 0 0 0;">Waiting 10 years will cost you <strong>$0</strong> in potential wealth. That's money you'd have to earn through extra labor later in life.</p>
-    </div>
-
-    <button class="btn" onclick="toggleLedger()">View Year-by-Year Freedom Map</button>
-
-    <div id="ledger" class="ledger-view">
-        <h3 id="ledger-title">Yearly Growth Journey</h3>
+    <div class="ledger-container">
         <table>
             <thead>
                 <tr>
                     <th>Age</th>
-                    <th>Yearly Contribution</th>
-                    <th>Interest Gained</th>
-                    <th>Year-End Total</th>
+                    <th>Portfolio Balance</th>
+                    <th>Monthly Expense (Inf. Adj)</th>
+                    <th>4% Safe Draw/Mo</th>
+                    <th>Status</th>
                 </tr>
             </thead>
-            <tbody id="ledger-body"></tbody>
+            <tbody id="ledgerBody"></tbody>
         </table>
     </div>
 </div>
 
 <script>
     function calculate() {
-        const startAge = parseInt(document.getElementById('startAge').value);
-        const monthly = parseFloat(document.getElementById('monthly').value);
-        const rate = parseFloat(document.getElementById('rate').value) / 100 / 12;
-        const targetAge = 65;
+        const currentExpenses = parseFloat(document.getElementById('expenses').value);
+        const age = parseInt(document.getElementById('age').value);
+        const monthlyAdd = parseFloat(document.getElementById('monthlyAdd').value);
+        const returnRate = parseFloat(document.getElementById('returnRate').value) / 100 / 12;
+        const inflationRate = parseFloat(document.getElementById('inflation').value) / 100 / 12;
 
-        const solve = (age) => {
-            let balance = 0;
-            const months = (targetAge - age) * 12;
-            for (let i = 0; i < months; i++) {
-                balance = (balance + monthly) * (1 + rate);
-            }
-            return balance;
-        };
-
-        const early = solve(startAge);
-        const late = solve(startAge + 10);
-        const tax = early - late;
-
-        document.getElementById('res-early-val').textContent = '$' + Math.round(early).toLocaleString();
-        document.getElementById('res-late-val').textContent = '$' + Math.round(late).toLocaleString();
-        document.getElementById('waiting-tax-text').innerHTML = `Waiting 10 years (starting at ${startAge + 10}) will cost you <strong>$${Math.round(tax).toLocaleString()}</strong> in potential wealth. To make up this gap, you'd need to work significantly harder or longer.`;
-        
-        renderLedger(startAge, monthly, rate);
-    }
-
-    function renderLedger(startAge, monthly, rate) {
-        const body = document.getElementById('ledger-body');
-        body.innerHTML = '';
         let balance = 0;
-        
-        for (let age = startAge; age <= 65; age++) {
-            let yearlyInterest = 0;
-            let yearlyContrib = monthly * 12;
-            
-            for (let m = 0; m < 12; m++) {
-                let interest = balance * rate;
-                balance = balance + interest + monthly;
-                yearlyInterest += interest;
+        let freedomFound = false;
+        let ledgerHtml = '';
+
+        // Run simulation up to age 100
+        for (let m = 0; m <= (100 - age) * 12; m++) {
+            const currentMonthAge = age + (m / 12);
+            const adjMonthlyExpense = currentExpenses * Math.pow(1 + inflationRate, m);
+            const safeMonthlyDraw = (balance * 0.04) / 12;
+
+            // Log yearly progress
+            if (m % 12 === 0) {
+                const isFree = safeMonthlyDraw >= adjMonthlyExpense;
+                if (isFree && !freedomFound) {
+                    freedomFound = true;
+                    document.getElementById('freedomAge').textContent = Math.floor(currentMonthAge);
+                    document.getElementById('freedomSummary').innerHTML = `At age ${Math.floor(currentMonthAge)}, your portfolio will generate <strong>$${Math.round(safeMonthlyDraw).toLocaleString()}</strong>/mo, covering your inflation-adjusted cost of living.`;
+                }
+
+                ledgerHtml += `<tr class="${isFree ? 'freedom-row' : ''}">
+                    <td>Age ${Math.floor(currentMonthAge)}</td>
+                    <td>$${Math.round(balance).toLocaleString()}</td>
+                    <td>$${Math.round(adjMonthlyExpense).toLocaleString()}</td>
+                    <td>$${Math.round(safeMonthlyDraw).toLocaleString()}</td>
+                    <td>${isFree ? '<span class="freedom-badge">FREE</span>' : '<small>Compounding...</small>'}</td>
+                </tr>`;
             }
 
-            const row = `<tr>
-                <td><strong>Age ${age}</strong></td>
-                <td>$${yearlyContrib.toLocaleString()}</td>
-                <td style="color:#059669">+$${Math.round(yearlyInterest).toLocaleString()}</td>
-                <td><strong>$${Math.round(balance).toLocaleString()}</strong></td>
-            </tr>`;
-            body.innerHTML += row;
+            // Update balance for next month
+            balance = (balance + monthlyAdd) * (1 + returnRate);
         }
+
+        if (!freedomFound) {
+            document.getElementById('freedomAge').textContent = "70+";
+            document.getElementById('freedomSummary').textContent = "Based on current rates, your freedom date is beyond age 70. Consider increasing contributions or return expectations.";
+        }
+
+        document.getElementById('ledgerBody').innerHTML = ledgerHtml;
     }
 
-    function toggleLedger() {
-        const l = document.getElementById('ledger');
-        l.style.display = l.style.display === 'block' ? 'none' : 'block';
-    }
-
-    // Init
+    // Initialize
     calculate();
 </script>
 
